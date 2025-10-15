@@ -158,7 +158,7 @@ const machinePlatformChartData = {
                 </div>
             </div>
 
-            {/* 📊 Stacked Bar Chart */}
+            {/* 📊 Stacked Bar Chart*/}
             <div className="bg-white p-4 rounded-lg shadow">
                 <Bar data={stackedBarData} options={stackedBarOptions} />
             </div>
