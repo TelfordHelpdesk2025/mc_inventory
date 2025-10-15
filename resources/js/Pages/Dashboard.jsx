@@ -144,7 +144,7 @@ const machinePlatformChartData = {
                 {/* 🥧 Pie: Machine Type */}
                 <div className="bg-white p-4 rounded-lg shadow">
                     <h2 className="text-lg font-semibold text-gray-700 mb-2">
-                        Machine Type Distribution
+                        Machine Type Distributionll
                     </h2>
                     <Pie data={machineTypeChartData} />
                 </div>
