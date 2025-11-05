@@ -8,7 +8,8 @@ export default function Unauthorized({ emp_data }) {
         const token = localStorage.getItem("authify-token");
         localStorage.removeItem("authify-token");
         router.get(route("logout"));
-        window.location.href = `http://192.168.2.221/authify/public/logout?key=${encodeURIComponent(
+        // window.location.href = `http://192.168.2.221/authify/public/logout?key=${encodeURIComponent(
+        window.location.href = `http://192.168.3.201/authify/public/logout?key=${encodeURIComponent(
             token
         )}&redirect=${encodeURIComponent(route("dashboard"))}`;
     };

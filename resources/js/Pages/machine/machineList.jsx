@@ -218,33 +218,56 @@ action: (
 
 
             {/* DATATABLE */}
-            <DataTable
-            
-                columns={[
-                    { key: "machine_num", label: "Machine" },
-                    { key: "serial", label: "Serial No." },
-                    { key: "machine_feed_type", label: "Feed Type" },
-                    { key: "machine_manufacturer", label: "Manufacturer" },
-                    { key: "machine_platform", label: "Platform" },
-                    { key: "pmnt_no", label: "PMNT No." },
-                    { key: "machine_type", label: "Machine Type" },
-                    { key: "model", label: "Model" },
-                    { key: "consigned", label: "Consigned" },
-                    { key: "action", label: "Action" },
-                ]}
-                data={dataWithAction}
-                meta={{
-                    from: tableData.from,
-                    to: tableData.to,
-                    total: tableData.total,
-                    links: tableData.links,
-                    currentPage: tableData.current_page,
-                    lastPage: tableData.last_page,
-                }}
-                routeName={route("machine.list")}
-                filters={tableFilters}
-                rowKey="machine_num"
-            />
+            <div className="flex justify-between items-center mb-3">
+  <div>
+    <label className="mr-2 font-medium">Show</label>
+    <select
+      value={tableFilters?.perPage || 10}
+      onChange={(e) => {
+        const perPage = e.target.value;
+        router.get(route("machine.list"), {
+          ...tableFilters,
+          perPage,
+        });
+      }}
+      className="border border-gray-300 rounded px-2 py-1"
+    >
+      {[10, 25, 50, 100].map((n) => (
+        <option key={n} value={n}>
+          {n}
+        </option>
+      ))}
+    </select>
+    <span className="ml-2">entries per page</span>
+  </div>
+</div>
+
+<DataTable
+  columns={[
+    { key: "machine_num", label: "Machine" },
+    { key: "serial", label: "Serial No." },
+    { key: "machine_feed_type", label: "Feed Type" },
+    { key: "machine_manufacturer", label: "Manufacturer" },
+    { key: "machine_platform", label: "Platform" },
+    { key: "pmnt_no", label: "PMNT No." },
+    { key: "machine_type", label: "Machine Type" },
+    { key: "model", label: "Model" },
+    { key: "consigned", label: "Consigned" },
+    { key: "action", label: "Action" },
+  ]}
+  data={dataWithAction}
+  meta={{
+    from: tableData?.from,
+    to: tableData?.to,
+    total: tableData?.total,
+    links: tableData?.links,
+    currentPage: tableData?.current_page,
+    lastPage: tableData?.last_page,
+  }}
+  routeName={route("machine.list")}
+  rowKey="machine_num"
+/>
+
 
             {/* ✅ VIEW MODAL */}
             <Modal

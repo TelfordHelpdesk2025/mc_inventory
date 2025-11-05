@@ -90,7 +90,7 @@ const machinePlatformChartData = {
                 "#ef4444",
                 "#8b5cf6",
                 "#14b8a6",
-            ][i % 6],
+            ][i % 8],
         });
     });
 
@@ -115,7 +115,7 @@ const machinePlatformChartData = {
         <AuthenticatedLayout>
             <Head title="Dashboard" />
 
-            <h1 className="text-2xl font-bold mb-4 text-gray-200">Dashboard</h1>
+            <h1 className="text-2xl font-bold mb-4 text-gray-00"><i className="fa-solid fa-chart-line animate-bounce mr-1"></i> Dashboard</h1>
 
             {/* 🔹 Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

@@ -11,12 +11,24 @@ class MachineListController extends Controller
 {
     public function index(Request $request)
     {
+        // Default sort kung walang laman request
+        if (!$request->has('sortBy')) {
+            $request->merge(['sortBy' => 'id']);
+        }
+        if (!$request->has('sortDirection')) {
+            $request->merge(['sortDirection' => 'desc']);
+        }
+
+        // ✅ Kunin perPage galing request o default 10
+        $perPage = $request->input('perPage', 10);
+
         // ✅ Gumamit ng remote connection: server25
         $query = DB::connection('server25')->table('machine_list')
             ->select('*')
             ->where('machine_num', '!=', 'NULL')
             ->where('machine_num', '!=', '')
             ->orderBy('machine_platform', 'asc');
+
 
         // 🔍 Optional search
         if ($search = $request->input('search')) {
@@ -38,31 +50,28 @@ class MachineListController extends Controller
         $sortDirection = $request->input('sortDirection', 'asc');
         $query->orderBy($sortBy, $sortDirection);
 
-        // 📄 Pagination
-        $machines = $query->paginate(10)->appends($request->all());
+        // 📄 Pagination (dynamic per page)
+        $machines = $query->paginate($perPage)->appends($request->all());
 
-        // 🔧 Filters (para sa frontend)
+        // 🔧 Filters para sa frontend
         $tableFilters = [
             'search' => $search,
             'sortBy' => $sortBy,
             'sortDirection' => $sortDirection,
+            'perPage' => $perPage,
         ];
 
-        // 🧭 Ibalik sa React page (machine/machineList.jsx)
+        // 🧭 Ibalik sa React page
         return Inertia::render('machine/machineList', [
             'tableData' => $machines,
             'tableFilters' => $tableFilters,
-            'emp_data' => [],
-            'tableFilters' => $request->only([
-                'search',
-                'perPage',
-                'sortBy',
-                'sortDirection',
-                'start',
-                'end',
-            ]),
+            'empData' => [
+                'emp_id' => session('emp_data')['emp_id'] ?? null,
+                'emp_name' => session('emp_data')['emp_name'] ?? null,
+            ]
         ]);
     }
+
 
     public function store(Request $request)
     {

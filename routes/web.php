@@ -23,6 +23,11 @@ Route::delete('/machines/{id}', [MachineListController::class, 'destroy'])->name
 
 
 
+// Route::fallback(function () {
+//     return Inertia::render('404');
+// })->name('404');
+
 Route::fallback(function () {
-    return Inertia::render('404');
+    // For Inertia requests, just redirect back to the same URL
+    return redirect()->to(request()->fullUrl());
 })->name('404');
