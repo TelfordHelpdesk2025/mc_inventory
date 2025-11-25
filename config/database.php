@@ -185,6 +185,41 @@ return [
                 'engine' => null,
             ];
         })(),
+
+        'eeportal' => (function () {
+            $host = getDbHost([
+                '172' => env('EEP_DB_HOST_172'),
+                '192' => env('EEP_DB_HOST_192'),
+                'local' => env('EEP_DB_HOST_LOCAL'),
+            ]);
+
+            [$username, $password] = getDbCredential(
+                [
+                    '172' => env('EEP_DB_USERNAME_172'),
+                    '192' => env('EEP_DB_USERNAME_192'),
+                    'local' => env('EEP_DB_USERNAME_LOCAL'),
+                ],
+                [
+                    '172' => env('EEP_DB_PASSWORD_172'),
+                    '192' => env('EEP_DB_PASSWORD_192'),
+                    'local' => env('EEP_DB_PASSWORD_LOCAL'),
+                ]
+            );
+
+            return [
+                'driver' => 'mysql',
+                'host' => $host,
+                'port' => env('EEP_DB_PORT', '3306'),
+                'database' => env('EEP_DB_DATABASE', 'laravel'),
+                'username' => $username,
+                'password' => $password,
+                'charset' => 'utf8mb4',
+                'collation' => 'utf8mb4_unicode_ci',
+                'prefix' => '',
+                'strict' => true,
+                'engine' => null,
+            ];
+        })(),
     ],
 
     /*

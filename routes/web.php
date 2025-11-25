@@ -12,6 +12,8 @@ require __DIR__ . '/auth.php';
 // General routes
 require __DIR__ . '/general.php';
 
+require __DIR__ . '/machine.php';
+
 
 
 Route::get('/machines', [MachineListController::class, 'index'])->name('machine.list');
