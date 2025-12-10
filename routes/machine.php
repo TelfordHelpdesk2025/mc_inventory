@@ -1,12 +1,22 @@
 <?php
 
 use App\Http\Controllers\machineList\HardDownController;
+use App\Http\Controllers\machineList\MachineListController;
+use App\Http\Controllers\machineList\MachineListsController;
 use App\Http\Controllers\machineList\WriteOffController;
 use Illuminate\Support\Facades\Route;
 
 $app_name = env('APP_NAME', '');
 
 Route::redirect('/', "/$app_name");
+
+Route::get('/machines/list/index', [MachineListsController::class, 'index'])->name('machine.list.index');
+
+
+Route::get('/machines/list', [MachineListController::class, 'index'])->name('machine.list');
+Route::post('/machines/store', [MachineListController::class, 'store'])->name('machine.store');
+Route::post('/machines/update/{id}', [MachineListController::class, 'update'])->name('machine.update');
+Route::delete('/machines/{id}', [MachineListController::class, 'destroy'])->name('machine.delete');
 
 Route::get("mc_inventory/harddown", [HardDownController::class, 'index'])->name('harddown.index');
 Route::post('/harddown/store', [HardDownController::class, 'store'])->name('harddown.store');

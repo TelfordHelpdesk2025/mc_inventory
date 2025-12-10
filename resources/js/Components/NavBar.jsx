@@ -9,10 +9,17 @@ export default function NavBar() {
         localStorage.removeItem("authify-token");
         router.get(route("logout"));
         // window.location.href = `http://192.168.2.221/authify/public/logout?key=${encodeURIComponent(
-        window.location.href = `http://192.168.3.201/authify/public/logout?key=${encodeURIComponent(
+        window.location.href = `http://192.168.3.201/authify/public/logout?token=${encodeURIComponent(
             token
         )}&redirect=${encodeURIComponent(route("dashboard"))}`;
     };
+
+    const getGreeting = () => {
+            const hour = new Date().getHours();
+                if (hour < 12) return "Good morning";
+                if (hour < 18) return "Good afternoon";
+                return "Good evening";
+            };
 
     return (
         <nav className="">
@@ -27,7 +34,7 @@ export default function NavBar() {
                             >
                                <i className="fa-regular fa-circle-user text-2xl"></i>
                                 <span className="mt-[3px]">
-                                    Welcome back, {emp_data?.emp_firstname}
+                                    Hello {getGreeting()}, {emp_data?.emp_firstname}
                                 </span>
                                 <i className="fa-solid fa-caret-down text-2xl"></i>
                             </div>

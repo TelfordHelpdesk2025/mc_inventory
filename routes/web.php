@@ -16,12 +16,12 @@ require __DIR__ . '/machine.php';
 
 
 
-Route::get('/machines', [MachineListController::class, 'index'])->name('machine.list');
-Route::post('/machines/store', [MachineListController::class, 'store'])->name('machine.store');
-Route::post('/machines/update/{id}', [MachineListController::class, 'update'])->name('machine.update');
-Route::delete('/machines/{id}', [MachineListController::class, 'destroy'])->name('machine.delete');
 
 
+
+Route::get('/maintenance', function () {
+    return Inertia::render('Maintenance');
+})->name('maintenance');
 
 
 

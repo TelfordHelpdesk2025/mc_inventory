@@ -66,23 +66,17 @@ class WriteOffController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'machine_num' => 'required|string|max:255',
-            'platform'    => 'required|string|max:255',
-            'model'       => 'required|string|max:255',
-            'location'    => 'required|string|max:255',
-            'package'     => 'required|string|max:255',
-            'process'     => 'required|string|max:255',
-            'status'      => 'required|string|max:255',
+            'qty' => 'required|string|max:255',
+            'serial_no'    => 'required|string|max:255',
+            'description'       => 'required|string|max:255',
+            'date_purchase'    => 'required|string|max:255',
         ]);
 
         DB::connection('eeportal')->table('write_off_tbl')->insert([
-            'machine_num' => $request->machine_num,
-            'platform'    => $request->platform, // FIXED
-            'model'       => $request->model,
-            'location'    => $request->location,
-            'package'     => $request->package,
-            'process'     => $request->process,
-            'status'      => $request->status,
+            'qty' => $request->qty,
+            'serial_no'    => $request->serial_no,
+            'description'       => $request->description,
+            'date_purchase'    => $request->date_purchase,
             'created_by'      => session('emp_data')['emp_name'] ?? null,
         ]);
 
@@ -92,25 +86,19 @@ class WriteOffController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'machine_num' => 'required',
-            'platform' => 'required',
-            'model' => 'required',
-            'location' => 'required',
-            'package' => 'required',
-            'process' => 'required',
-            'status' => 'required',
+            'qty' => 'required',
+            'serial_no'    => 'required',
+            'description'       => 'required',
+            'date_purchase'    => 'required',
         ]);
 
         DB::connection('eeportal')->table('write_off_tbl')
             ->where('id', $id)
             ->update([
-                'machine_num' => $request->machine_num,
-                'platform' => $request->platform,
-                'model' => $request->model,
-                'location' => $request->location,
-                'package' => $request->package,
-                'process' => $request->process,
-                'status' => $request->status,
+                'qty' => $request->qty,
+                'serial_no'    => $request->serial_no,
+                'description'       => $request->description,
+                'date_purchase'    => $request->date_purchase,
                 'updated_by'      => session('emp_data')['emp_name'] ?? null,
             ]);
 

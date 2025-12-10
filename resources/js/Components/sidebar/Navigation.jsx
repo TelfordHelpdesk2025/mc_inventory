@@ -18,13 +18,21 @@ export default function NavLinks() {
                
             />
             <SidebarLink
+                href={route("machine.list.index")}
+                label="Machine Lists"
+                icon={
+                   <i className="fas fa-gears"></i>
+                }
+                        // notifications={5}
+            />
+            {/* <SidebarLink
                 href={route("machine.list")}
                 label="Machine List"
                 icon={
                    <i className="fas fa-gear"></i>
                 }
                         // notifications={5}
-            />
+            /> */}
 
             <SidebarLink
                 href={route("harddown.index")}
@@ -45,16 +53,20 @@ export default function NavLinks() {
             />
             
 
-            {["superadmin", "admin"].includes(emp_data?.emp_system_role) && (
-                <div>
-                    <SidebarLink
-                        href={route("admin")}
-                        label="Administrators"
-                        icon={<i className="fa-solid fa-user-tie"></i>}
-                        // notifications={5}
-                    />
-                </div>
-            )}
+            {(
+  ["superadmin", "admin", "engineer"].includes(emp_data?.emp_system_role) ||
+  (["pmtech"].includes(emp_data?.emp_system_role) && ["1742"].includes(emp_data?.emp_id))
+) && (
+  <div>
+    <SidebarLink
+      href={route("admin")}
+      label="Administrators"
+      icon={<i className="fa-solid fa-user-tie"></i>}
+      // notifications={5}
+    />
+  </div>
+)}
+
         </nav>
     );
 }

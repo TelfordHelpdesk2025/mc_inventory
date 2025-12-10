@@ -46,13 +46,13 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
             <Head title="Manage Admin List" />
 
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold">
-                    <i className="fa-solid fa-users"></i> Admin List
+                <h1 className="text-2xl font-bold animate-bounce">
+                    <i className="fa-solid fa-users mr-2"></i> Admin List
                 </h1>
 
                 {["superadmin", "admin", "toolcrib"].includes(emp_data?.emp_system_role) && (
                     <button
-                         className="text-white bg-emerald-500 border-emerald-900 btn hover:bg-emerald-700"
+                         className="text-white bg-green-500 border-green-900 btn hover:bg-green-700"
                         onClick={() =>
                             router.get(route("index_addAdmin"), {}, { preserveScroll: true })
                         }

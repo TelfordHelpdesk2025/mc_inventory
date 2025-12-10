@@ -17,11 +17,25 @@ class AuthMiddleware
     {
 
         // COMMENT OUT IF NO SPECIFIC DEPT OR JOB TITLE
-        if (session('emp_data') && !in_array(session('emp_data')['emp_dept'], ['Equipment Engineering']) && !in_array(session('emp_data')['emp_system_role'], ['admin', 'superadmin'])) {
-            session()->forget('emp_data');
-            session()->flush();
-            return redirect()->route('unauthorized');
+
+
+        $empData = session('emp_data');
+
+        if ($empData) {
+            $role = $empData['emp_system_role'] ?? null;
+            $empId = $empData['emp_id'] ?? null;
+
+            if (
+                !in_array($role, ['superadmin', 'admin', 'engineer']) &&
+                !($role === 'pmtech' && $empId === '1742')
+            ) {
+                // User is not authorized
+                session()->forget('emp_data');
+                session()->flush();
+                return redirect()->route('unauthorized');
+            }
         }
+
 
         return $next($request);
     }

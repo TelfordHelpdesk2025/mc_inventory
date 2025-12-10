@@ -146,7 +146,7 @@ export default function HardDown({ tableData, tableFilters, emp_data, errors }) 
 
                     {dropdownOpen === item.id && (
                         <div
-                            className="block overflow-y-auto z-50 mt-1 w-32 bg-white border border-gray-200 rounded shadow-lg space-y-2 p-1"
+                            className="block overflow-y-auto z-50 mt-1 w-32 bg-gray-400 border border-gray-200 rounded shadow-lg space-y-2 p-1"
                             style={{
                                 top: dropdownPosition.top,
                                 left: dropdownPosition.left,
@@ -168,7 +168,7 @@ export default function HardDown({ tableData, tableFilters, emp_data, errors }) 
                                     openEditModal(item);
                                     setDropdownOpen(null);
                                 }}
-                                className="block w-full text-left px-3 py-1 text-sm hover:bg-green-600 bg-green-500 text-white rounded border border-2 border-green-900"
+                                className="block w-full text-left px-3 py-1 text-sm hover:bg-yellow-600 bg-yellow-500 text-white rounded border border-2 border-yellow-900"
                             >
                                 <i className="fa fa-edit mr-2"></i> Edit
                             </button>
@@ -201,8 +201,8 @@ export default function HardDown({ tableData, tableFilters, emp_data, errors }) 
             <Head title="Manage Hard Down List" />
 
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold">
-                    <i className="fa-solid fa-turn-down"></i> Hard Down List
+                <h1 className="text-2xl font-bold animate-bounce">
+                    <i className="fa-solid fa-turn-down mr-2"></i>Hard Down List
                 </h1>
 
                 <button
@@ -363,12 +363,27 @@ function FormContent({
     onSubmit,
     onCancel,
 }) {
+
+    // SET ICON BASED ON TITLE
+    let icon = <i className="fa-solid fa-circle-info"></i>;
+
+    if (title === "View Hard Down Machine") {
+        icon = <i className="fa-regular fa-eye text-blue-600"></i>;
+    } else if (title === "New Hard Down Machine") {
+        icon = <i className="fa-solid fa-file-circle-plus text-green-600"></i>;
+    } else if (title === "Edit Hard Down Machine") {
+        icon = <i className="fa-regular fa-pen-to-square text-yellow-600"></i>;
+    }
+
     return (
-        <div className="p-6">
-            <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2 text-gray-700">
-                {title}
+        <div className="p-6 bg-gray-200 rounded-md">
+            <div className="p-4 bg-gradient-to-b from-gray-300 to-gray-600 rounded-md">
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 animate-bounce mt-2">
+                {icon} {title}
             </h2>
-            <div className="border-t pt-4 space-y-5">
+            </div>
+
+            <div className="space-y-4 text-gray-700 mt-2">
                 <div className="grid grid-cols-2 gap-6">
                     {[
                         { label: "Machine ID", value: machineNum, setter: setMachineNum, key: "machine_num" },
@@ -422,6 +437,7 @@ function FormContent({
                             <i className="fa-solid fa-ban"></i>
                             Cancel
                         </button>
+
                         <button
                             onClick={onSubmit}
                             className="px-4 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"

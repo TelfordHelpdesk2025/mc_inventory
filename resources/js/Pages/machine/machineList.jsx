@@ -125,7 +125,8 @@ const dataWithAction = tableData.data.map((item) => ({
   // 🔸 Action buttons
   
 action: ( 
-   emp_data && (["superadmin", "admin"].includes(emp_data?.emp_system_role)) ) ? (
+   emp_data && (["superadmin", "admin", "engineer"].includes(emp_data?.emp_system_role) ||
+  (["pmtech"].includes(emp_data?.emp_system_role) && ["1742"].includes(emp_data?.emp_id)) ) ) ? (
     <div className="relative inline-block text-left">
       {/* 🔘 Dropdown Trigger */}
       <button
@@ -138,7 +139,7 @@ action: (
           });
           setDropdownOpen(dropdownOpen === item.id ? null : item.id);
         }}
-        className="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded text-sm"
+        className="px-2 py-1 bg-gray-500 hover:bg-black text-white rounded text-sm border-2 hover:border-blue-600 rounded-md"
       >
         Actions <i className="fa fa-caret-down ml-1"></i>
       </button>
@@ -146,7 +147,7 @@ action: (
       {/* ✅ Dropdown Menu — only for the clicked item */}
       {dropdownOpen === item.id && (
         <div
-          className="block overflow-y-auto z-50 mt-1 w-32 bg-white border border-gray-200 rounded shadow-lg space-y-2 p-1 rounded"
+          className="block overflow-y-auto z-50 mt-1 w-32 bg-gray-400 border border-gray-200 rounded shadow-lg space-y-2 p-1 px-2 py-1 rounded"
           style={{
             top:dropdownPosition.top,
             left:dropdownPosition.left,
@@ -158,7 +159,7 @@ action: (
               openViewModal(item);
               setDropdownOpen(null);
             }}
-            className="block w-full text-left px-3 py-1 text-sm hover:bg-blue-600 bg-blue-500 rounded"
+            className="block w-full text-left px-3 py-1 text-sm hover:bg-blue-600 bg-blue-500 text-white rounded border border-2 border-blue-900"
           >
             <i className="fa fa-eye mr-2"></i> View
           </button>
@@ -168,7 +169,7 @@ action: (
               openEditModal(item);
               setDropdownOpen(null);
             }}
-            className="block w-full text-left px-3 py-1 text-sm hover:bg-green-600 bg-green-500 rounded"
+            className="block w-full text-left px-3 py-1 text-sm hover:bg-amber-600 bg-amber-500 text-white rounded border border-2 border-amber-900"
           >
             <i className="fa fa-edit mr-2"></i> Edit
           </button>
@@ -178,7 +179,7 @@ action: (
               handleDelete(item.id);
               setDropdownOpen(null);
             }}
-            className="block w-full text-left px-3 py-1 text-sm hover:bg-red-600 bg-red-500 rounded"
+            className="block w-full text-left px-3 py-1 text-sm hover:bg-red-600 bg-red-500 text-white rounded border border-2 border-red-900"
           >
             <i className="fa fa-trash mr-2"></i> Delete
           </button>
@@ -206,9 +207,9 @@ action: (
 
             {/* HEADER */}
             <div className="flex items-center justify-between mb-4">
-               <h1 className="text-2xl font-bold">Machine List</h1>
+               <h1 className="text-2xl font-bold animate-bounce"><i class="fa-solid fa-cash-register mr-2"></i>Machine List</h1>
                <button
-                   className="text-blue-600 border border-blue-600 px-3 py-1 rounded hover:bg-blue-600 hover:text-white transition"
+                   className="text-white bg-green-500 border-green-900 btn hover:bg-green-700"
                     onClick={openAddModal}
                >
                     <i className="fas fa-plus mr-1"></i>
@@ -230,9 +231,9 @@ action: (
           perPage,
         });
       }}
-      className="border border-gray-300 rounded px-2 py-1"
+      className="border border-gray-300 rounded px-2 py-1 bg-white text-gray-700"
     >
-      {[10, 25, 50, 100].map((n) => (
+      {[10, 25, 50, 100, 500, 1000, 5000].map((n) => (
         <option key={n} value={n}>
           {n}
         </option>
@@ -279,15 +280,15 @@ action: (
         >
 
                 {selectedMachine && (
-  <div className="p-4 space-y-3 overflow-y-auto max-h-[80vh]">
-    <div className="bg-gradient-to-r from-cyan-500 to-blue-500 p-3 rounded">
-      <h2 className="text-xl font-semibold">
+  <div className="p-4 space-y-3 overflow-y-auto max-h-[80vh] bg-white">
+    <div className="bg-gradient-to-r from-cyan-500 to-blue-500 p-3 rounded text-gray-900">
+      <h2 className="text-xl font-semibold animate-pulse">
         <i className="fas fa-info-circle mr-2"></i> Machine Details
       </h2>
     </div>
 
     <div className="overflow-x-auto">
-      <table className="table-auto w-full text-sm border">
+      <table className="table-auto w-full text-sm border text-gray-700">
         <tbody>
           {[
             {
@@ -392,18 +393,18 @@ action: (
   show={isEditModalOpen}
   onClose={handleCloseModals}
   maxWidth="3xl"
-  className="p-5 rounded-lg shadow-lg w-full md:max-w-7xl overflow-y-auto overflow-x-hidden max-h-[100vh] border-2 border-green-500"
+  className="p-5 rounded-lg shadow-lg w-full md:max-w-7xl overflow-y-auto overflow-x-hidden max-h-[100vh] border-4 border-blue-600 bg-white"
 >
   {formData && (
     <form onSubmit={handleSubmit} className="space-y-2">
-      <h2 className="text-lg font-semibold mb-3">
-        <i className="fas fa-edit mr-2"></i> Edit Machine Info
+      <h2 className="text-lg font-semibold mb-3 animate-pulse text-gray-900">
+        <i className="fas fa-edit mr-2 text-2xl"></i>Edit Machine Info
       </h2>
 
       {/* 👉 Generate inputs dynamically */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-3 text-gray-700">
         {[
-            "id",
+          "id",
           "machine_num",
           "machine_feed_type",
           "machine_manufacturer",
