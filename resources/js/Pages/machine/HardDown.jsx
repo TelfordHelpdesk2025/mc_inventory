@@ -130,7 +130,7 @@ export default function HardDown({ tableData, tableFilters, emp_data, errors }) 
         ...item,
         action:
             emp_data &&
-            ["superadmin", "admin"].includes(emp_data?.emp_system_role) ? (
+            ["superadmin", "admin"].includes(emp_data?.emp_role) ? (
                 <div className="relative inline-block text-left">
                     <button
                         onClick={(e) => {

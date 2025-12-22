@@ -2,47 +2,43 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    protected $connection = 'masterlist'; // kung iba ang connection
+    protected $table = 'users'; // o masterlist table kung ginamit
+
+    protected $primaryKey = 'EMPLOYID'; // primary key sa masterlist
+    public $incrementing = false; // kung varchar ang primary key
+    protected $keyType = 'string';
+
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'EMPLOYID',
+        'EMPNAME',
+        'PASSWRD',
+        'JOB_TITLE',
+        'DEPARTMENT',
+        'PRODLINE',
+        'STATION',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'PASSWRD',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    // Map employeeID sa EMPLOYID
+    public function getAuthIdentifierName()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return 'EMPLOYID';
+    }
+
+    // Laravel expects password field to be 'password', so map it
+    public function getAuthPassword()
+    {
+        return $this->PASSWRD;
     }
 }

@@ -113,7 +113,7 @@ export default function WriteOff({ tableData, tableFilters, emp_data, errors }) 
     ...item,
     action:
         emp_data &&
-        ["superadmin", "admin", "engineer"].includes(emp_data?.emp_system_role) ? (
+        ["superadmin", "admin", "engineer"].includes(emp_data?.emp_role) ? (
             <>
                 <button
                     onClick={(e) => {

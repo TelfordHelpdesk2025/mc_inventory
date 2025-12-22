@@ -24,13 +24,12 @@ export default function Profile({ profile, errors }) {
             {
                 preserveScroll: true,
                 onSuccess: () => {
-                    const token = localStorage.getItem("authify-token");
-                    localStorage.removeItem("authify-token");
-                    router.get(route("logout"));
-                    // window.location.href = `http://192.168.2.221/authify/public/logout?key=${encodeURIComponent(
-                    window.location.href = `http://192.168.3.201/authify/public/logout?key=${encodeURIComponent(
-                        token
-                    )}&redirect=${encodeURIComponent(route("dashboard"))}`;
+                    // Session-based logout
+                    router.get(route("logout"), {}, {
+                        onFinish: () => {
+                            window.location.href = route("login");
+                        },
+                    });
                 },
             }
         );

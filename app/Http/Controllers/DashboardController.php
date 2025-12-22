@@ -10,6 +10,8 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        $empData = session('emp_data');
+        // dd($empData);
         $totalMachines = DB::connection('server25')->table('machine_list')->count();
 
         $consignedMachines = DB::connection('server25')

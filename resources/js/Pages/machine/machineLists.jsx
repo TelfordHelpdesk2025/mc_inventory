@@ -118,8 +118,8 @@ const dataWithAction = tableData.data.map((item) => ({
   // 🔸 Action buttons
   
 action: ( 
-   emp_data && (["superadmin", "admin", "engineer"].includes(emp_data?.emp_system_role) ||
-  (["pmtech"].includes(emp_data?.emp_system_role) && ["1742"].includes(emp_data?.emp_id)) ) ) ? (
+   emp_data && (["superadmin", "admin", "engineer"].includes(emp_data?.emp_role) ||
+  (["pmtech"].includes(emp_data?.emp_role) && ["1742"].includes(emp_data?.emp_id)) ) ) ? (
     <div className="relative inline-block text-left">
       {/* 🔘 Dropdown Trigger */}
       <button

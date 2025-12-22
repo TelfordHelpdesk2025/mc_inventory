@@ -54,8 +54,8 @@ export default function NavLinks() {
             
 
             {(
-  ["superadmin", "admin", "engineer"].includes(emp_data?.emp_system_role) ||
-  (["pmtech"].includes(emp_data?.emp_system_role) && ["1742"].includes(emp_data?.emp_id))
+  ["superadmin", "admin", "engineer"].includes(emp_data?.emp_role) ||
+  (["pmtech"].includes(emp_data?.emp_role) && ["1742"].includes(emp_data?.emp_id))
 ) && (
   <div>
     <SidebarLink
