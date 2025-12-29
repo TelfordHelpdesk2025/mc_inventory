@@ -25,6 +25,22 @@ export default function NavLinks() {
                 }
                         // notifications={5}
             />
+
+                        {(
+  ["superadmin", "admin", "engineer"].includes(emp_data?.emp_role) ||
+  (["pmtech"].includes(emp_data?.emp_role) && ["17807"].includes(emp_data?.emp_id))
+) && (
+  <div>
+     <SidebarLink
+                href={route("dthm.index")}
+                label="DTHM List"
+                icon={
+                   <i className="fa-solid fa-tachograph-digital"></i>
+                }
+                        // notifications={5}
+            />
+ </div>
+)}
             {/* <SidebarLink
                 href={route("machine.list")}
                 label="Machine List"

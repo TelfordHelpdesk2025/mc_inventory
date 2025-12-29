@@ -16,6 +16,8 @@ require __DIR__ . '/general.php';
 
 require __DIR__ . '/machine.php';
 
+require __DIR__ . '/dthm.php';
+
 
 Route::get('/maintenance', function () {
     return Inertia::render('Maintenance');

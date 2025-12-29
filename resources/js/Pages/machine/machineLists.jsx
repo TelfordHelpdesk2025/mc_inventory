@@ -538,7 +538,7 @@ action: (
                 <div className="text-right mt-3">
                   <button
                     type="button"
-                    onClick={handleCloseModals}
+                    onClose={handleCloseModals}
                     className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700 mr-2"
                   >
                     <i className="fas fa-times"></i> Cancel
