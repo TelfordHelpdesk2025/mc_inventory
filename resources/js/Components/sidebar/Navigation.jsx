@@ -17,6 +17,10 @@ export default function NavLinks() {
                 }
                
             />
+            {(["superadmin", "admin", "engineer"].includes(emp_data?.emp_role) ||
+  (["pmtech"].includes(emp_data?.emp_role) && ["1742"].includes(emp_data?.emp_id))
+) && (
+  <div>
             <SidebarLink
                 href={route("machine.list.index")}
                 label="Machine Lists"
@@ -25,6 +29,8 @@ export default function NavLinks() {
                 }
                         // notifications={5}
             />
+             </div>
+)}
 
                         {(
   ["superadmin", "admin", "engineer"].includes(emp_data?.emp_role) ||
@@ -41,14 +47,6 @@ export default function NavLinks() {
             />
  </div>
 )}
-            {/* <SidebarLink
-                href={route("machine.list")}
-                label="Machine List"
-                icon={
-                   <i className="fas fa-gear"></i>
-                }
-                        // notifications={5}
-            /> */}
 
             <SidebarLink
                 href={route("harddown.index")}

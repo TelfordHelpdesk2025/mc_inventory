@@ -113,7 +113,7 @@ export default function DthmList({ tableData, tableFilters, emp_data }) {
                         : item.status &&
                           item.status.trim().toLowerCase() === "inactive"
                         ? "text-rose-500 border-rose-500 bg-rose-100 hover:bg-rose-700 hover:text-white"
-                        : "text-gray-400 border-gray-400 bg-gray-100 hover:bg-gray-700 hover:text-white"
+                        : "text-amber-400 border-amber-400 bg-amber-100 hover:bg-amber-700 hover:text-white"
                 }`}
             >
                 {item.status?.trim() || "Waiting to Update..."}
@@ -339,9 +339,9 @@ export default function DthmList({ tableData, tableFilters, emp_data }) {
                         disabled={drawerMode === "view"}
                     >
                         <option value="">-- Select Status --</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                        <option value="waiting">Waiting</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Waiting">Waiting</option>
                     </select>
                 ) : (
                     <input

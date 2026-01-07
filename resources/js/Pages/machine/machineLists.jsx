@@ -7,6 +7,8 @@ import React, { useState, Fragment } from "react";
 
 export default function machineLists({ tableData, tableFilters, emp_data }) {
 
+        const [isLoading, setIsLoading] = useState(true);
+
         const [isViewModalOpen, setIsViewModalOpen] = useState(false);
         const [isEditModalOpen, setIsEditModalOpen] = useState(false);
         const [selectedMachine, setSelectedMachine] = useState(null);
@@ -233,7 +235,7 @@ action: (
                 routeName={route("machine.list.index")}
                 filters={tableFilters}
                 rowKey="machine_num"
-                showExport={false}
+                showExport={true}
             />
 
 

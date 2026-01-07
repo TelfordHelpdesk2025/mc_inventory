@@ -161,38 +161,6 @@ class DashboardController extends Controller
             ->orderBy('model')
             ->get();
 
-        // Define age groups
-        $ageGroups = [
-            '1-5' => [1, 5],
-            '6-10' => [6, 10],
-            '11-15' => [11, 15],
-            '16-above' => [16, 1000], // 1000 as a practical upper bound
-        ];
-
-        // Prepare machine data by age group
-        $machineDataByAge = [];
-
-        foreach ($ageGroups as $groupName => [$min, $max]) {
-            $groupRaw = DB::connection('server25')
-                ->table('machine_list')
-                ->select('oem', 'machine_type', DB::raw('COUNT(*) as count'))
-                ->whereBetween('age', [$min, $max])
-                ->whereNotNull('oem')
-                ->where('oem', '!=', '')
-                ->whereNotNull('machine_type')
-                ->where('machine_type', '!=', '')
-                ->groupBy('oem', 'machine_type')
-                ->get();
-
-            foreach ($groupRaw as $row) {
-                $machineDataByAge[$groupName][$row->oem][$row->machine_type] = $row->count;
-            }
-
-            // Add totals
-            foreach (($machineDataByAge[$groupName] ?? []) as $oem => $types) {
-                $machineDataByAge[$groupName][$oem]['total'] = array_sum($types);
-            }
-        }
 
 
 
@@ -214,8 +182,6 @@ class DashboardController extends Controller
             "allConsignedTypes" => $allConsignedTypes,
             "minAge" => $minAge,
             "maxAge" => $maxAge,
-
-            "machineDataByAge" => $machineDataByAge,
 
             'emp_data' => session('emp_data') ?? [],
         ]);
