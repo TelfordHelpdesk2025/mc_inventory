@@ -18,7 +18,7 @@ class AdminMiddleware
             return redirect()->route('login');
         }
 
-        if (!in_array($empData['emp_role'], ['superadmin', 'admin', 'pmtech'])) {
+        if (!in_array($empData['emp_role'], ['superadmin', 'admin', 'pmtech', 'seniortech'])) {
             return redirect()->route('dashboard');
         }
 

@@ -1,10 +1,19 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, router } from "@inertiajs/react";
 import DataTable from "@/Components/DataTable";
-import Modal from "@/Components/Modal";
 import { useState } from "react";
+import { Modal, Select, Space } from "antd";
+import { FileAddOutlined, EyeOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined, SaveOutlined, UnorderedListOutlined,  } from '@ant-design/icons';
+import "antd/dist/reset.css";
+import { Inertia } from '@inertiajs/inertia';
 
-export default function WriteOff({ tableData, tableFilters, emp_data, errors }) {
+export default function WriteOff({
+    tableData,
+    tableFilters,
+    emp_data,
+    errors,
+    machines = [],
+}) {
     // --- MODALS ---
     const [showAddModal, setShowAddModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
@@ -18,11 +27,10 @@ export default function WriteOff({ tableData, tableFilters, emp_data, errors }) 
     const [datePurchase, setDatePurchase] = useState("");
     const [currentId, setCurrentId] = useState(null);
 
-    // --- DROPDOWN STATE --
+    // --- DROPDOWN ---
     const [dropdownOpen, setDropdownOpen] = useState(null);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
 
-    // --- RESET FORM ---
     const resetForm = () => {
         setQty("");
         setSerial("");
@@ -31,63 +39,79 @@ export default function WriteOff({ tableData, tableFilters, emp_data, errors }) 
         setCurrentId(null);
     };
 
-    // --- ADD SUBMIT ---
-    const handleAddSubmit = () => {
-        router.post(
-            route("writeoff.store"),
-            {
+    // --- MACHINE SELECT ---
+    const handleMachineChange = (value) => {
+        setDescription(value);
+
+        const machine = machines.find(
+            (m) => m.machine_num === value
+        );
+
+        if (machine) {
+            setSerial(machine.serial);
+            setDatePurchase(machine.acquired_date);
+        } else {
+            setSerial("");
+            setDatePurchase("");
+        }
+    };
+
+    // --- ADD ---
+ const handleAddSubmit = () => {
+    Modal.confirm({
+        title: 'Confirm Save',
+        icon: <ExclamationCircleOutlined />,
+        content: 'Are you sure the data is correct?',
+        okText: 'Yes',
+        cancelText: 'Cancel',
+
+        onOk() {
+            router.post(route("writeoff.store"), {
                 qty,
                 serial_no: serial,
                 description,
                 date_purchase: datePurchase,
-            },
-            {
+            }, {
                 onSuccess: () => {
+                    alert("✅ Write Off added successfully.");
                     setShowAddModal(false);
                     resetForm();
-                    alert("Write-Off added successfully.");
                     window.location.reload();
                 },
-            }
-        );
-    };
+            });
+        },
+    });
+};
 
-    // --- EDIT SUBMIT ---
+
+    // --- EDIT ---
     const handleEditSubmit = () => {
-        router.put(
-            route("writeoff.update", currentId),
-            {
-                qty,
-                serial_no: serial,
-                description,
-                date_purchase: datePurchase,
-            },
-            {
-                onSuccess: () => {
-                    setShowEditModal(false);
-                    resetForm();
-                    alert("Write-Off updated successfully.");
-                    window.location.reload();
-                },
-            }
-        );
-    };
-
-    // --- DELETE ---
-    const handleDelete = (id) => {
-        setCurrentId(id);
-        setShowDeleteModal(true);
-    };
-
-    const confirmDelete = () => {
-        router.delete(route("writeoff.delete", currentId), {
+        router.put(route("writeoff.update", currentId), {
+            qty,
+            serial_no: serial,
+            description,
+            date_purchase: datePurchase,
+        }, {
             onSuccess: () => {
-                setShowDeleteModal(false);
-                alert("Write-Off removed successfully.");
+                alert("✅ Write Off updated successfully.");
+                setShowEditModal(false);
+                resetForm();
                 window.location.reload();
             },
         });
     };
+
+    // --- DELETE ---
+const confirmDelete = () => {
+    router.put(route("writeoff.delete", currentId), {}, {
+        onSuccess: () => {
+            alert("✅ Write Off deleted successfully.");
+            setShowDeleteModal(false);
+            window.location.reload();
+        },
+    });
+};
+
 
     // --- VIEW ---
     const openViewModal = (item) => {
@@ -108,93 +132,54 @@ export default function WriteOff({ tableData, tableFilters, emp_data, errors }) 
         setShowEditModal(true);
     };
 
-    // --- DATA WITH ACTION COLUMN ---
     const dataWithAction = tableData.data.map((item) => ({
-    ...item,
-    action:
-        emp_data &&
-        ["superadmin", "admin", "engineer"].includes(emp_data?.emp_role) ? (
-            <>
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        setDropdownPosition({
-                            top: rect.bottom + window.scrollY,
-                            left: rect.left + window.scrollX,
-                        });
-                        setDropdownOpen(dropdownOpen === item.id ? null : item.id);
-                    }}
-                    className="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-gray-100 rounded border border-black"
-                >
-                    Actions <i className="fa fa-caret-down ml-1"></i>
-                </button>
+        ...item,
+       action: (
+    <div className="flex gap-2">
+        <button
+            onClick={() => openViewModal(item)}
+            className="px-2 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center gap-1"
+        >
+            <EyeOutlined /> View
+        </button>
+        {/* <button
+            onClick={() => openEditModal(item)}
+            className="px-2 py-1 bg-amber-500 text-white rounded"
+        >
+            <EditOutlined />
+        </button> */}
+   {(
+  ["superadmin", "admin", "engineer"].includes(emp_data?.emp_role)) &&
+        <button
+            onClick={() => {
+                setCurrentId(item.id);
+                setShowDeleteModal(true);
+            }}
+            className="px-2 py-2 bg-red-500 text-white rounded hover:bg-red-600 flex items-center gap-1"
+        >
+            <DeleteOutlined /> Delete
+        </button>
+        }
+        
+    </div>
+)
 
-                {dropdownOpen === item.id && (
-                    <div
-                        className="fixed z-50 w-32 bg-gray-400 border border-gray-200 rounded-md shadow-lg space-y-2 p-1"
-                        style={{
-                            top: dropdownPosition.top,
-                            left: dropdownPosition.left,
-                        }}
-                    >
-                        <button
-                            onClick={() => {
-                                openViewModal(item);
-                                setDropdownOpen(null);
-                            }}
-                            className="block w-full text-left px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded border border-2 border-blue-900"
-                        >
-                            <i className="fa fa-eye mr-1"></i> View
-                        </button>
-
-                        <button
-                            onClick={() => {
-                                openEditModal(item);
-                                setDropdownOpen(null);
-                            }}
-                            className="block w-full text-left px-3 py-1 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded border border-2 border-yellow-900"
-                        >
-                            <i className="fa fa-edit mr-1"></i> Edit
-                        </button>
-
-                        <button
-                            onClick={() => {
-                                handleDelete(item.id);
-                                setDropdownOpen(null);
-                            }}
-                            className="block w-full text-left px-3 py-1 text-sm bg-red-500 hover:bg-red-600 text-white rounded border border-2 border-red-900"
-                        >
-                            <i className="fa fa-trash mr-1"></i> Delete
-                        </button>
-                    </div>
-                )}
-            </>
-        ) : (
-            <button
-                onClick={() => openViewModal(item)}
-                className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-            >
-                <i className="fas fa-eye mr-1"></i> View
-            </button>
-        ),
-}));
-
+    }));
 
     return (
         <AuthenticatedLayout>
             <Head title="Write-Off List" />
 
-            <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold animate-bounce">
-                    <i className="fa-solid fa-file-circle-xmark mr-1"></i>Write-Off Machine List
+            <div className="flex justify-between mb-4">
+                <h1 className="text-2xl font-bold">
+                    <UnorderedListOutlined /> Write-Off Machine List
                 </h1>
 
                 <button
                     onClick={() => setShowAddModal(true)}
-                    className="text-white bg-green-500 border-green-900 btn hover:bg-green-700"
+                    className="bg-green-600 text-white px-4 py-2 rounded"
                 >
-                    <i className="fas fa-plus"></i> Add New WriteOff
+                    <FileAddOutlined /> Add Write-Off
                 </button>
             </div>
 
@@ -204,7 +189,7 @@ export default function WriteOff({ tableData, tableFilters, emp_data, errors }) 
                     { key: "serial_no", label: "Serial" },
                     { key: "description", label: "Description" },
                     { key: "date_purchase", label: "Date Purchase" },
-                    { key: "created_by", label: "Responsible person" },
+                    { key: "created_by", label: "Responsible" },
                     { key: "action", label: "Action" },
                 ]}
                 data={dataWithAction}
@@ -219,13 +204,22 @@ export default function WriteOff({ tableData, tableFilters, emp_data, errors }) 
                 routeName={route("writeoff.index")}
                 filters={tableFilters}
                 rowKey="serial_no"
-                showExport={false}
             />
 
             {/* ADD */}
-            <Modal show={showAddModal} onClose={() => setShowAddModal(false)}>
+            <Modal
+    title={
+        <Space className="text-emerald-700">
+            <FileAddOutlined />
+            Add Write-Off
+        </Space>
+    }
+    open={showAddModal}
+    onCancel={() => setShowAddModal(false)}
+    footer={null}
+    destroyOnClose
+>
                 <FormContent
-                    title="Add Write-Off"
                     qty={qty}
                     setQty={setQty}
                     serial={serial}
@@ -234,36 +228,48 @@ export default function WriteOff({ tableData, tableFilters, emp_data, errors }) 
                     setDescription={setDescription}
                     datePurchase={datePurchase}
                     setDatePurchase={setDatePurchase}
+                    machines={machines}
                     readOnly={false}
-                    errors={errors}
                     onSubmit={handleAddSubmit}
-                    onCancel={() => setShowAddModal(false)}
                 />
             </Modal>
 
             {/* VIEW */}
-            <Modal show={showViewModal} onClose={() => setShowViewModal(false)}>
+            <Modal
+    title={
+        <Space className="text-indigo-700">
+            <EyeOutlined />
+            View Write-Off
+        </Space>
+    }
+    open={showViewModal}
+    onCancel={() => setShowViewModal(false)}
+    footer={null}
+    destroyOnClose
+>
                 <FormContent
-                    title="View Write-Off"
                     qty={qty}
-                    setQty={setQty}
                     serial={serial}
-                    setSerial={setSerial}
                     description={description}
-                    setDescription={setDescription}
                     datePurchase={datePurchase}
-                    setDatePurchase={setDatePurchase}
                     readOnly={true}
-                    errors={{}}
-                    onSubmit={null}
-                    onCancel={() => setShowViewModal(false)}
                 />
             </Modal>
 
             {/* EDIT */}
-            <Modal show={showEditModal} onClose={() => setShowEditModal(false)}>
+                        <Modal
+    title={
+        <Space className="text-amber-600">
+            <EditOutlined />
+            Edit Write-Off
+        </Space>
+    }
+    open={showEditModal}
+    onCancel={() => setShowEditModal(false)}
+    footer={null}
+    destroyOnClose
+>
                 <FormContent
-                    title="Edit Write-Off"
                     qty={qty}
                     setQty={setQty}
                     serial={serial}
@@ -272,49 +278,37 @@ export default function WriteOff({ tableData, tableFilters, emp_data, errors }) 
                     setDescription={setDescription}
                     datePurchase={datePurchase}
                     setDatePurchase={setDatePurchase}
+                    machines={machines}
                     readOnly={false}
-                    errors={errors}
                     onSubmit={handleEditSubmit}
-                    onCancel={() => setShowEditModal(false)}
                 />
             </Modal>
 
             {/* DELETE */}
-            <Modal show={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
-                <div className="p-6 text-center">
-                    <h2 className="text-xl font-bold mb-4 text-red-600">
-                        <i className="fa fa-exclamation-triangle mr-2"></i> Confirm Delete
-                    </h2>
-                    <p className="mb-6">Are you sure you want to delete this?</p>
+            <Modal
+    title={
+        <span className="flex items-center gap-2 text-red-600">
+            <ExclamationCircleOutlined />
+            Confirm Delete
+        </span>
+    }
+    open={showDeleteModal}
+    onOk={confirmDelete}
+    onCancel={() => setShowDeleteModal(false)}
+    okText="Delete"
+    okButtonProps={{ danger: true }}
+>
+    Are you sure you want to delete this?
+</Modal>
 
-                    <div className="flex justify-center gap-3">
-                        <button
-                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 border border-2 border-blue-900"
-                            onClick={() => setShowDeleteModal(false)}
-                        >
-                             <i className="fa-solid fa-ban mr-1"></i>
-                            Cancel
-                        </button>
-
-                        <button
-                            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 border border-2 border-red-900"
-                            onClick={confirmDelete}
-                        >
-                             <i className="fa-regular fa-trash-can mr-1"></i>
-                            Delete
-                        </button>
-                    </div>
-                </div>
-            </Modal>
         </AuthenticatedLayout>
     );
 }
 
 // ======================================================================
-// FORM CONTENT COMPONENT
+// FORM CONTENT
 // ======================================================================
 function FormContent({
-    title,
     qty,
     setQty,
     serial,
@@ -323,102 +317,93 @@ function FormContent({
     setDescription,
     datePurchase,
     setDatePurchase,
+    machines = [],
     readOnly,
-    errors,
     onSubmit,
-    onCancel,
 }) {
-
-    // SET ICON BASED ON TITLE
-    let icon = <i className="fa-solid fa-circle-info"></i>;
-
-    if (title === "Add Write-Off") {
-        icon = <i className="fa-regular fa-eye text-blue-600"></i>;
-    } else if (title === "View Write-Off") {
-        icon = <i className="fa-solid fa-file-circle-plus text-green-600"></i>;
-    } else if (title === "Edit Write-Off") {
-        icon = <i className="fa-regular fa-pen-to-square text-yellow-600"></i>;
-    }
+    const handleMachineChange = (value) => {
+        setDescription(value);
+        const machine = machines.find(m => m.machine_num === value);
+        if (machine) {
+            setSerial(machine.serial);
+            setDatePurchase(machine.acquired_date);
+        }
+    };
 
     return (
-        <div className="p-6 bg-gray-200 rounded-md">
-            <div className="p-4 bg-gradient-to-b from-gray-300 to-gray-600 rounded-md">
-                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 animate-bounce mt-2">
-                {icon} {title}
-            </h2>
+        <div className="space-y-4">
+            <div>
+                <label>Quantity</label>
+                <input
+                    type="number"
+                    value={qty}
+                    disabled={readOnly}
+                    onChange={(e) => setQty?.(e.target.value)}
+                    className="w-full border p-2 rounded-md"
+                />
             </div>
 
-            <div className="space-y-4 text-gray-700">
-                {/* QTY */}
-                <div>
-                    <label className="block text-sm font-semibold">Quantity</label>
-                    <input
-                        type="number"
-                        value={qty}
-                        onChange={(e) => setQty(e.target.value)}
-                        disabled={readOnly}
-                        className="w-full p-2 border rounded"
-                    />
-                    {errors.qty && <p className="text-red-500 text-sm">{errors.qty}</p>}
-                </div>
-
-                {/* SERIAL */}
-                <div>
-                    <label className="block text-sm font-semibold">Serial No</label>
-                    <input
-                        type="text"
-                        value={serial}
-                        onChange={(e) => setSerial(e.target.value)}
-                        disabled={readOnly}
-                        className="w-full p-2 border rounded"
-                    />
-                    {errors.serial_no && <p className="text-red-500 text-sm">{errors.serial_no}</p>}
-                </div>
-
-                {/* DESCRIPTION */}
-                <div>
-                    <label className="block text-sm font-semibold">Description</label>
-                    <textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        disabled={readOnly}
-                        className="w-full p-2 border rounded"
-                        rows={3}
-                    ></textarea>
-                </div>
-
-                {/* DATE */}
-                <div>
-                    <label className="block text-sm font-semibold">Date Purchase</label>
-                    <input
-                        type="date"
-                        value={datePurchase}
-                        onChange={(e) => setDatePurchase(e.target.value)}
-                        disabled={readOnly}
-                        className="w-full p-2 border rounded"
-                    />
-                </div>
-
-                {/* BUTTONS */}
-                {!readOnly && (
-                    <div className="flex justify-end gap-3">
-                        <button
-                            className="px-4 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-700 flex items-center gap-2"
-                            onClick={onCancel}
-                        >
-                            <i className="fa-solid fa-ban"></i>
-                            Cancel
-                        </button>
-                        <button
-                            className="px-4 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
-                            onClick={onSubmit}
-                        >
-                            <i className="fa-regular fa-paper-plane"></i>
-                            Save
-                        </button>
-                    </div>
-                )}
+            <div>
+                <label>Description</label>
+                <Select
+                    showSearch
+                    value={description || undefined}
+                    disabled={readOnly}
+                    className="w-full border p-2 bg-white rounded-md border-gray-500 text-black"
+                    placeholder="Search machine..."
+                    optionFilterProp="label"
+                    onChange={handleMachineChange}
+                    options={machines.map((m) => ({
+                        value: m.machine_num,
+                        label: `${m.machine_num}`,
+                    }))}
+                />
             </div>
+
+            <div>
+                <label>Serial No</label>
+                <input
+                    type="text"
+                    value={serial}
+                    disabled={readOnly}
+                    onChange={(e) => setSerial?.(e.target.value)}
+                    className="w-full border p-2 bg-gray-100 rounded-md"
+                    readOnly
+                />
+            </div>
+
+            
+
+            <div>
+                <label>Date Purchase</label>
+                <input
+                    type="text"
+                    value={datePurchase}
+                    disabled={readOnly}
+                    onChange={(e) => setDatePurchase?.(e.target.value)}
+                    className="w-full border p-2 bg-gray-100 rounded-md"
+                    required
+                />
+            </div>
+
+            {!readOnly && (
+    <div className="flex justify-end">
+        <button
+            onClick={onSubmit}
+            disabled={!qty || !description || !serial || !datePurchase}
+            className={`px-4 py-2 rounded flex items-center gap-1
+                ${
+                    !qty || !description || !serial || !datePurchase
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-green-600 hover:bg-green-700 text-white'
+                }
+            `}
+        >
+            <SaveOutlined /> Save
+        </button>
+    </div>
+)}
+
         </div>
     );
 }

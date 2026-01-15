@@ -4,29 +4,51 @@ import { Head } from "@inertiajs/react";
 export default function Maintenance() {
     return (
         <AuthenticatedLayout>
-            <Head title="Maintenance" />
+            <Head title="Page Under Maintenance" />
 
-            <div className="min-h-screen bg-gray-200 flex justify-center items-center px-4">
-                <div className="bg-white w-full max-w-3xl rounded-lg shadow-xl p-10 text-center">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-gray-100 to-blue-200 px-4">
+                <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl p-12 text-center">
                     
-                    <div className="flex justify-center mb-5">
-                        {/* Icon sample gear */}
+                    {/* Icon */}
+                    <div className="flex justify-center mb-6 animate-pulse">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            fill="#3c8dbc"
+                            fill="none"
                             viewBox="0 0 24 24"
-                            className="w-20 h-20"
+                            strokeWidth={1.5}
+                            stroke="currentColor"
+                            className="w-24 h-24 text-blue-600"
                         >
-                            <path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 00.11-.64l-1.92-3.32a.5.5 0 00-.61-.22l-2.39.96a7.027 7.027 0 00-1.63-.94l-.36-2.54A.488.488 0 0014.29 2h-4.58a.5.5 0 00-.49.42l-.36 2.54c-.59.24-1.14.56-1.63.94l-2.39-.96a.5.5 0 00-.61.22L2.71 8.84c-.14.23-.08.53.11.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.5.5 0 00-.11.64l1.92 3.32c.14.23.44.33.61.22l2.39-.96c.49.38 1.04.7 1.63.94l.36 2.54c.05.24.25.42.49.42h4.58c.24 0 .44-.18.49-.42l.36-2.54c.59-.24 1.14-.56 1.63-.94l2.39.96c.23.11.52.01.61-.22l1.92-3.32a.5.5 0 00-.11-.64l-2.03-1.58zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 8.5 12 8.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M11.983 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75-4.365-9.75-9.75-9.75zm.017 5.25v5.25l3.75 2.25"
+                            />
                         </svg>
                     </div>
 
-                    <h1 className="text-3xl font-semibold text-gray-700 uppercase">
-                        Maintenance System
+                    {/* Text */}
+                    <h1 className="text-4xl font-bold text-gray-800 tracking-wide">
+                        Page Under Maintenance
                     </h1>
-                    <p className="mt-2 text-gray-500 font-semibold">
-                        This module is currently under development.
+
+                    <p className="mt-4 text-gray-600 text-lg">
+                        This page is currently being improved to give you a better experience.
                     </p>
+
+                    <p className="mt-2 text-sm text-gray-500">
+                        Please check back again later.
+                    </p>
+
+                    {/* Optional button */}
+                    <div className="mt-8">
+                        <a
+                            href={route("dashboard")}
+                            className="inline-block rounded-lg bg-blue-600 px-6 py-3 text-white font-semibold shadow-md hover:bg-blue-700 transition"
+                        >
+                            Go Back to Dashboard
+                        </a>
+                    </div>
                 </div>
             </div>
         </AuthenticatedLayout>

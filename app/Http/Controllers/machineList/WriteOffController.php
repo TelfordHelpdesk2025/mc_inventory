@@ -27,10 +27,10 @@ class WriteOffController extends Controller
             'eeportal',
             'write_off_tbl',
             [
-                // 'conditions' => function ($query) {
-                //     return $query
-                //         ->whereIn('emp_role', ['admin', 'engineer']);
-                // },
+                'conditions' => function ($query) {
+                    return $query
+                        ->orderBy('id', 'desc');
+                },
 
                 'searchColumns' => ['qty', 'serial_no', 'description', 'date_purchase'],
             ]
@@ -41,15 +41,19 @@ class WriteOffController extends Controller
             return $result;
         }
 
-        $machine = DB::connection('server25')->table('machine_list')
+        $machines = DB::connection('server25')->table('machine_list')
             ->where('machine_num', '!=', '')
+            ->where('machine_num', '!=', 'N/A')
             ->whereNotNull('machine_num')
+            ->whereIn('status', ['Active', 'Active', 'active'])
+            ->orderBy('machine_platform', 'asc')
             ->get();
 
         // dd($machine);
 
         return Inertia::render('machine/WriteOff', [
             'tableData' => $result['data'],
+            'machines' => $machines,
             'tableFilters' => $request->only([
                 'search',
                 'perPage',
@@ -80,6 +84,14 @@ class WriteOffController extends Controller
             'created_by'      => session('emp_data')['emp_name'] ?? null,
         ]);
 
+        DB::connection('server25')->table('machine_list')
+            ->where('machine_num', $request->description)
+            ->where('serial', $request->serial_no)
+            ->update([
+                'status' => 'Write-Off',
+                'updated_by'      => session('emp_data')['emp_name'] ?? null,
+            ]);
+
         return redirect()->back()->with('success', 'Hard Down Machine added successfully.');
     }
 
@@ -105,10 +117,26 @@ class WriteOffController extends Controller
         return back()->with('success', 'Machine updated successfully.');
     }
 
-    public function destroy($id)
+    public function delete(Request $request, $id)
     {
+        // 1. Find the write-off first
+        $writeoff = DB::connection('eeportal')->table('write_off_tbl')->where('id', $id)->first();
+
+        if (!$writeoff) {
+            return back()->with('error', 'Write Off not found.');
+        }
+
+        // 2. Update the machine status
+        DB::connection('server25')->table('machine_list')
+            ->where('machine_num', $writeoff->description) // use machine_num stored in write-off
+            ->update([
+                'status' => 'ACTIVE',
+                'updated_by' => session('emp_data')['emp_name'] ?? null,
+            ]);
+
+        // 3. Delete the write-off
         DB::connection('eeportal')->table('write_off_tbl')->where('id', $id)->delete();
 
-        return back()->with('success', 'Machine deleted successfully.');
+        return back()->with('success', 'Machine updated successfully.');
     }
 }

@@ -15,11 +15,10 @@ $app_name = env('APP_NAME', '');
 Route::prefix($app_name)
     ->middleware(AuthMiddleware::class)
     ->group(function () {
+
+        // Machine List ROUTES
         Route::get('/machines/list/index', [MachineListsController::class, 'index'])
             ->name('machine.list.index');
-
-        Route::get('/machines/list', [MachineListController::class, 'index'])
-            ->name('machine.list');
 
         Route::post('/machines/store', [MachineListController::class, 'store'])
             ->name('machine.store');
@@ -29,10 +28,4 @@ Route::prefix($app_name)
 
         Route::delete('/machines/{id}', [MachineListController::class, 'destroy'])
             ->name('machine.delete');
-
-        Route::get('/mc_inventory/harddown', [HardDownController::class, 'index'])
-            ->name('harddown.index');
-
-        Route::get('/mc_inventory/writeoff', [WriteOffController::class, 'index'])
-            ->name('writeoff.index');
     });

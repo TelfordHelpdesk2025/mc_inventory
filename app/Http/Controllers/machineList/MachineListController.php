@@ -80,7 +80,7 @@ class MachineListController extends Controller
             ['created_by' => session('emp_data')['emp_name'] ?? null]
         ));
 
-        return redirect()->route('machine.list')->with('success', 'Machine added successfully.');
+        return redirect()->route('machine.list.index')->with('success', 'Machine added successfully.');
     }
 
 
@@ -153,6 +153,6 @@ class MachineListController extends Controller
     {
         DB::connection('server25')->table('machine_list')->where('id', $id)->delete();
 
-        return redirect()->route('machine.list')->with('success', 'Machine deleted successfully.');
+        return redirect()->route('machine.list.index')->with('success', 'Machine deleted successfully.');
     }
 }

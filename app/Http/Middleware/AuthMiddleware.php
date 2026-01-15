@@ -45,7 +45,7 @@ class AuthMiddleware
         $empId = $empData['emp_id'];
 
         if (
-            !in_array($role, ['superadmin', 'admin', 'engineer', 'pmtech']) &&
+            !in_array($role, ['superadmin', 'admin', 'engineer', 'pmtech', 'seniortech']) &&
             !($role === 'pmtech' && $empId === '1742')
         ) {
             // User is not authorized

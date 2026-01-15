@@ -16,6 +16,10 @@ require __DIR__ . '/general.php';
 
 require __DIR__ . '/machine.php';
 
+require __DIR__ . '/harddown.php';
+
+require __DIR__ . '/writeoff.php';
+
 require __DIR__ . '/dthm.php';
 
 

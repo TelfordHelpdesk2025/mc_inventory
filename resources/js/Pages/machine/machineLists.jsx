@@ -5,8 +5,9 @@ import Modal from "@/Components/Modal";
 import React, { useState, Fragment } from "react";
 
 
-export default function machineLists({ tableData, tableFilters, emp_data }) {
+export default function machineLists({ tableData, tableFilters, emp_data, existingMachine }) {
 
+        const [isMachineNumValid, setIsMachineNumValid] = useState(true);
         const [isLoading, setIsLoading] = useState(true);
 
         const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -54,13 +55,27 @@ export default function machineLists({ tableData, tableFilters, emp_data }) {
                 setIsViewModalOpen(false);
                 setIsEditModalOpen(false);
                 setSelectedMachine(null);
+                window.location.reload();
             };
         
             // 🔹 Handle form input changes
-            const handleChange = (e) => {
-                const { name, value } = e.target;
-                setFormData({ ...formData, [name]: value });
-            };
+   const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  setFormData((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+
+  // Case-insensitive check for machine_num
+  if (name === "machine_num") {
+    const lowerValue = value.toLowerCase();
+    const lowerExisting = existingMachine.map((m) => m.toLowerCase());
+    setIsMachineNumValid(!lowerExisting.includes(lowerValue));
+  }
+};
+
+
         
             // 🔹 Submit edited data
         const handleSubmit = (e) => {
@@ -95,10 +110,53 @@ export default function machineLists({ tableData, tableFilters, emp_data }) {
           }
         };
 
+        const STATUS_STYLES = {
+    "active": "text-green-700 border-green-600 bg-green-100 hover:bg-green-700 hover:text-white",
+    "operational": "text-lime-700 border-lime-600 bg-lime-100 hover:bg-lime-700 hover:text-white",
+    "active ams": "text-emerald-700 border-emerald-600 bg-emerald-100 hover:bg-emerald-700 hover:text-white",
+
+    "for qualification": "text-indigo-700 border-indigo-600 bg-indigo-100 hover:bg-indigo-700 hover:text-white",
+    "under qualification": "text-blue-700 border-blue-600 bg-blue-100 hover:bg-blue-700 hover:text-white",
+
+    "for waiting of parts": "text-yellow-800 border-yellow-600 bg-yellow-100 hover:bg-yellow-600 hover:text-white",
+
+    "cold shutdown": "text-amber-700 border-amber-600 bg-amber-100 hover:bg-amber-700 hover:text-white",
+
+    "hard shutdown": "text-red-700 border-red-600 bg-red-100 hover:bg-red-700 hover:text-white",
+    "write-off": "text-orange-700 border-orange-600 bg-orange-100 hover:bg-orange-700 hover:text-white",
+
+    "inactive": "text-rose-700 border-rose-600 bg-rose-100 hover:bg-rose-700 hover:text-white",
+    "archived": "text-cyan-700 border-cyan-600 bg-cyan-100 hover:bg-cyan-700 hover:text-white",
+    "for archive": "text-stone-700 border-stone-600 bg-stone-100 hover:bg-stone-700 hover:text-white",
+
+    "no record database": "text-orange-700 border-orange-600 bg-orange-100 hover:bg-orange-700 hover:text-white",
+};
+
+
+const getStatusClass = (status) => {
+    if (!status) return "text-slate-500 border-slate-400 bg-slate-100";
+
+    return (
+        STATUS_STYLES[status.trim().toLowerCase()] ||
+        "text-purple-700 border-purple-600 bg-purple-100 hover:bg-purple-700 hover:text-white"
+    );
+};
+
 
     // 🔹 Add "View", "Edit", "Delete" buttons per row
 const dataWithAction = tableData.data.map((item) => ({
   ...item,
+
+  // 🔸 status badge
+  status: (
+    <span
+        className={`px-2 py-1 text-xs font-semibold border rounded-md transition-all duration-200 ${getStatusClass(
+            item.status
+        )}`}
+    >
+        {item.status?.trim() || "Waiting to Update..."}
+    </span>
+),
 
   // 🔸 Consigned badge
   consigned: (
@@ -199,7 +257,7 @@ action: (
             <Head title="Manage Admin List" />
 
             <div className="flex items-center justify-between mb-4">
-               <h1 className="text-2xl font-bold animate-bounce"><i class="fa-solid fa-cash-register mr-2"></i>Machine List</h1>
+               <h1 className="text-2xl font-bold animate-bounce"><i className="fa-solid fa-cash-register mr-2"></i>Machine List</h1>
                <button
                    className="text-white bg-green-500 border-green-900 btn hover:bg-green-700"
                     onClick={openAddModal}
@@ -212,13 +270,14 @@ action: (
             <DataTable
                 columns={[
                     { key: "machine_num", label: "Machine" },
-                    { key: "serial", label: "Serial No." },
                     { key: "machine_feed_type", label: "Feed Type" },
                     { key: "machine_manufacturer", label: "Manufacturer" },
                     {key: "machine_platform" , label: "Platform"},
                     {key: "pmnt_no" , label: "Pmnt No."},
                     {key: "machine_type" , label: "Machine Type"},
                     {key: "model" , label: "Model"},
+                    {key: "location" , label: "Location"},
+                    {key: "status" , label: "Status"},
                     {key: "consigned" , label: "Consignment"},
                     { key: "action", label: "Action" },
 
@@ -235,7 +294,7 @@ action: (
                 routeName={route("machine.list.index")}
                 filters={tableFilters}
                 rowKey="machine_num"
-                showExport={true}
+                showExport={false}
             />
 
 
@@ -472,85 +531,97 @@ action: (
                 </h2>
             
                 <div className="grid grid-cols-3 gap-3">
-                  {[
-                    "machine_num",
-                    "machine_feed_type",
-                    "machine_manufacturer",
-                    "machine_platform",
-                    "machine_description",
-                    "company_rec_id",
-                    "customer_rec_id",
-                    "status",
-                    "pmnt_no",
-                    "cn_no",
-                    "orig_loc",
-                    "site_loc",
-                    "location",
-                    "oem",
-                    "model",
-                    "serial",
-                    "machine_type",
-                    "pm_personnel",
-                    "platform",
-                    "category",
-                    "level",
-                    "dimension",
-                    "operating_supply",
-                    "phase",
-                    "hz",
-                    "amp",
-                    "power_consumption",
-                    "weight",
-                    "spph",
-                    "cap_shift",
-                    "cap_delay",
-                    "cap_mo",
-                    "manufactured_date",
-                    "age",
-                    "condition",
-                    "acquired_from",
-                    "acquisition_type",
-                    "acquired_date",
-                    "unit_price",
-                    "acquired_amount",
-                    "useful_life",
-                    "monthly_depreciation",
-                    "last_date_depreciation",
-                    "netbook_value",
-                    "purpose_acquisition",
-                    "specify_machine_replaced",
-                    "date_transfer",
-                    "consigned",
-                  ].map((field) => (
-                    <div key={field}>
-                      <label className="text-sm font-medium capitalize">
-                        {field.replace(/_/g, " ")}
-                      </label>
-                      <input
-                        type="text"
-                        name={field}
-                        value={formData[field] || ""}
-                        onChange={handleChange}
-                        className="w-full border rounded p-1 text-gray-600"
-                      />
-                    </div>
-                  ))}
-                </div>
+  {[
+    "machine_num",
+    "machine_feed_type",
+    "machine_manufacturer",
+    "machine_platform",
+    "machine_description",
+    "company_rec_id",
+    "customer_rec_id",
+    "status",
+    "pmnt_no",
+    "cn_no",
+    "orig_loc",
+    "site_loc",
+    "location",
+    "oem",
+    "model",
+    "serial",
+    "machine_type",
+    "pm_personnel",
+    "platform",
+    "category",
+    "level",
+    "dimension",
+    "operating_supply",
+    "phase",
+    "hz",
+    "amp",
+    "power_consumption",
+    "weight",
+    "spph",
+    "cap_shift",
+    "cap_delay",
+    "cap_mo",
+    "manufactured_date",
+    "age",
+    "condition",
+    "acquired_from",
+    "acquisition_type",
+    "acquired_date",
+    "unit_price",
+    "acquired_amount",
+    "useful_life",
+    "monthly_depreciation",
+    "last_date_depreciation",
+    "netbook_value",
+    "purpose_acquisition",
+    "specify_machine_replaced",
+    "date_transfer",
+    "consigned",
+  ].map((field) => (
+    <div key={field}>
+      <label className="text-sm font-medium capitalize">
+        {field.replace(/_/g, " ")}
+      </label>
+      <input
+        type="text"
+        name={field}
+        value={formData[field] || ""}
+        onChange={handleChange}
+        className="w-full border rounded p-1 text-gray-600"
+      />
+
+      {/* Only show error for machine_num */}
+      {field === "machine_num" && !isMachineNumValid && (
+        <p className="text-red-500 text-sm mt-1">
+          Machine number already exists in the Inventory!
+        </p>
+      )}
+    </div>
+  ))}
+</div>
+
             
                 <div className="text-right mt-3">
                   <button
                     type="button"
-                    onClose={handleCloseModals}
+                    onClick={handleCloseModals}
                     className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700 mr-2"
                   >
                     <i className="fas fa-times"></i> Cancel
                   </button>
                   <button
-                    type="submit"
-                    className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
-                  >
-                    <i className="fas fa-save"></i> Save
-                  </button>
+  type="submit"
+  disabled={!isMachineNumValid}
+  className={`bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 ${
+    !isMachineNumValid ? 'opacity-50 cursor-not-allowed hover:bg-blue-600' : ''
+  }`}
+>
+  <i className="fas fa-save"></i> Save
+</button>
+
                 </div>
               </form>
             </Modal>

@@ -193,6 +193,23 @@ export default function DthmList({ tableData, tableFilters, emp_data }) {
         ),
     }));
 
+    const normalizeDateForInput = (value) => {
+  if (!value) return "";
+
+  // Already YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return value;
+  }
+
+  // MM/DD/YYYY → YYYY-MM-DD
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+    const [month, day, year] = value.split("/");
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+
+  return "";
+};
+
     return (
         <AuthenticatedLayout>
             <Head title="Manage DTHM List" />
@@ -296,8 +313,10 @@ export default function DthmList({ tableData, tableFilters, emp_data }) {
             "cal_specs_no",
             "instrument",
             "instrument_description",
+            "instrument_model",
             "instrument_serial_no",
             "instrument_control_no",
+            "accuracy",
             "instrument_cal_date",
             "instrument__cal_due",
             "tracebility",
@@ -320,16 +339,17 @@ export default function DthmList({ tableData, tableFilters, emp_data }) {
                         disabled
                     />
                 ) : ["eqpmnt_cal_date", "eqpmnt_cal_due", "instrument_cal_date", "instrument__cal_due"].includes(field) ? (
-                    // date fields
-                    <input
-                        type="date"
-                        className="w-full mt-1 rounded border-gray-300 border px-2 py-1"
-                        name={field}
-                        value={formData[field] || ""}
-                        onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
-                        disabled={drawerMode === "view"}
-                    />
-                ) : field === "status" ? (
+  <input
+    type="date"
+    className="w-full mt-1 rounded border-gray-300 border px-2 py-1"
+    name={field}
+    value={normalizeDateForInput(formData[field])}
+    onChange={(e) =>
+      setFormData({ ...formData, [field]: e.target.value })
+    }
+    disabled={drawerMode === "view"}
+  />
+): field === "status" ? (
                     // dropdown for status
                     <select
                         className="w-full mt-1 rounded border-gray-300 border px-2 py-1"
