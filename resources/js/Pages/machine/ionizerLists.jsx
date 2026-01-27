@@ -14,6 +14,7 @@ import BookmarkAddedTwoToneIcon from '@mui/icons-material/BookmarkAddedTwoTone';
 import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
 import ScannerTwoToneIcon from '@mui/icons-material/ScannerTwoTone';
 import SizeContext from "antd/es/config-provider/SizeContext";
+import HvacTwoToneIcon from '@mui/icons-material/HvacTwoTone';
 
 /* ======================================================
    FIELD CONFIG (SINGLE SOURCE OF TRUTH)
@@ -129,7 +130,7 @@ const ViewSection = ({ title, data, fields }) => {
 /* ======================================================
    MAIN COMPONENT
 ====================================================== */
-export default function MachineLists({
+export default function ionizerLists({
   tableData,
   tableFilters,
   emp_data,
@@ -276,48 +277,48 @@ const getStatusClass = (status) => {
 
   return (
     <AuthenticatedLayout>
-      <Head title="Machine List" />
+      <Head title="Ionizer List" />
 
       <div className="flex justify-between mb-4">
-        <h1 className="text-2xl font-bold"><ScannerTwoToneIcon style={{fontSize: 45, marginBottom: 10}}/> Machine List</h1>
+        <h1 className="text-2xl font-bold"><HvacTwoToneIcon style={{fontSize: 45, marginBottom: 10}}/> Ionizer List</h1>
         <button
           onClick={openAddModal}
           className="bg-green-500 text-white px-3 rounded hover:bg-green-600"
         >
-          <PlusOutlined style={{fontSize: 18, fontWeight: "bold"}} /> NEW Machine
+          <PlusOutlined style={{fontSize: 18, fontWeight: "bold"}} /> New Ionizer
         </button>
       </div>
 
        <DataTable
-                     columns={[
-                         { key: "machine_num", label: "Machine" },
-                         { key: "machine_feed_type", label: "Feed Type" },
-                         { key: "machine_manufacturer", label: "Manufacturer" },
-                         {key: "machine_platform" , label: "Platform"},
-                         {key: "pmnt_no" , label: "Pmnt No."},
-                         {key: "machine_type" , label: "Machine Type"},
-                         {key: "model" , label: "Model"},
-                         {key: "location" , label: "Location"},
-                         {key: "serial" , label: "Serial No."},
-                         {key: "status" , label: "Status"},
-                         {key: "consigned" , label: "Consignment"},
-                         { key: "action", label: "Action" },
-     
-                     ]}
-                     data={dataWithAction}
-                     meta={{
-                         from: tableData.from,
-                         to: tableData.to,
-                         total: tableData.total,
-                         links: tableData.links,
-                         currentPage: tableData.current_page,
-                         lastPage: tableData.last_page,
-                     }}
-                     routeName={route("machine.list.index")}
-                     filters={tableFilters}
-                     rowKey="machine_num"
-                     showExport={false}
-                 />
+                columns={[
+                    { key: "machine_num", label: "Machine" },
+                    { key: "machine_feed_type", label: "Feed Type" },
+                    { key: "machine_manufacturer", label: "Manufacturer" },
+                    {key: "machine_platform" , label: "Platform"},
+                    {key: "pmnt_no" , label: "Pmnt No."},
+                    {key: "machine_type" , label: "Machine Type"},
+                    {key: "model" , label: "Model"},
+                    {key: "location" , label: "Location"},
+                    {key: "status" , label: "Status"},
+                    {key: "consigned" , label: "Consignment"},
+                    { key: "action", label: "Action" },
+
+                ]}
+                data={dataWithAction}
+                meta={{
+                    from: tableData.from,
+                    to: tableData.to,
+                    total: tableData.total,
+                    links: tableData.links,
+                    currentPage: tableData.current_page,
+                    lastPage: tableData.last_page,
+                }}
+                routeName={route("ionizer.list.index")}
+                filters={tableFilters}
+                rowKey="machine_num"
+                showExport={false}
+            />
+
       {/* ================= VIEW DRAWER ================= */}
 <Drawer
   title={selectedMachine?.machine_num}
@@ -371,12 +372,12 @@ const getStatusClass = (status) => {
       {isEditModalOpen ? (
         <>
           <EditOutlined className="text-indigo-500" />
-          <span className="text-indigo-600">Update Machine</span>
+          <span className="text-indigo-600">Update Ionizer</span>
         </>
       ) : (
         <>
           <PlusOutlined className="text-emerald-600" />
-          <span className="text-emerald-600">New Machine</span>
+          <span className="text-emerald-600">New Ionizer</span>
         </>
       )}
     </div>

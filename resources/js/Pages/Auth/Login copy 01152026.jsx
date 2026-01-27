@@ -1,37 +1,17 @@
-import { useEffect } from "react";
 import { useForm, Head } from "@inertiajs/react";
 import InputError from "@/Components/InputError";
 import TextInput from "@/Components/TextInput";
 
-export default function Login({ redirect, autoLogin, username }) {
+export default function Login({ redirect }) {
     const { data, setData, post, processing, errors } = useForm({
         employeeID: "",
         password: "",
     });
 
-    useEffect(() => {
-        console.log("Props received:", { autoLogin, username }); // Debug
-
-        if (autoLogin === "1" && username) {
-            setData("employeeID", username);
-            setData("password", "123123");
-
-            // Delay slightly to ensure state updates before submit
-            setTimeout(() => {
-                console.log("Submitting auto-login form...", {
-                    employeeID: username,
-                    password: "123123",
-                });
-                post(route("login"));
-            }, 50);
-        }
-    }, [autoLogin, username]);
-
     const submit = (e) => {
         e.preventDefault();
         post(route("login"));
     };
-
 
     return (
         <>
@@ -122,7 +102,8 @@ export default function Login({ redirect, autoLogin, username }) {
                                 disabled={processing}
                                 className={`w-full py-3.5 rounded-xl text-lg font-semibold flex justify-center gap-2 text-white transition
                                     bg-indigo-600 hover:bg-indigo-700
-                                    ${processing ? "opacity-70" : ""}`}
+                                    ${processing ? "opacity-70" : ""}
+                                `}
                             >
                                 <i className="fas fa-sign-in-alt" />
                                 {processing ? "Logging in..." : "Login"}

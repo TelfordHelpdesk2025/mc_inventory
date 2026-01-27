@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\machineList\{
     HardDownController,
+    IonizerListsController,
     MachineListController,
     MachineListsController,
     WriteOffController
@@ -29,3 +30,6 @@ Route::prefix($app_name)
         Route::delete('/machines/{id}', [MachineListController::class, 'destroy'])
             ->name('machine.delete');
     });
+
+Route::get('/ionizer/list/index', [IonizerListsController::class, 'index'])
+    ->name('ionizer.list.index');

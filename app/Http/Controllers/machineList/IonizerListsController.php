@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
-class MachineListsController extends Controller
+class IonizerListsController extends Controller
 {
     protected $datatable;
     protected $datatable1;
@@ -28,26 +28,7 @@ class MachineListsController extends Controller
             ->pluck('machine_num')
             ->toArray();
 
-        $MachineData = DB::connection('server25')
-            ->table('machine_list')
-            ->where('machine_num', '!=', 'N/A')
-            ->select(
-                "machine_feed_type",
-                "machine_manufacturer",
-                "machine_platform",
-                "machine_description",
-                "status",
-                "location",
-                "serial",
-                "model",
-                "platform",
-                "category",
-                "condition",
-                "consigned"
-            )
-            ->get();
-
-
+        // dd($existingMachine);
 
 
         $result = $this->datatable->handle(
@@ -57,12 +38,11 @@ class MachineListsController extends Controller
             [
                 'conditions' => function ($query) {
                     return $query
-                        ->where('machine_num', '!=', 'NULL')
-                        ->where('machine_num', '!=', '')
-                        ->orderBy('machine_platform', 'asc');
+                        ->whereIn('machine_type', ['IONIZER', 'Air Ionizer'])
+                        ->orderBy('pmnt_no', 'asc');
                 },
 
-                'searchColumns' => ['machine_num', 'machine_feed_type', 'machine_manufacturer', 'machine_platform', 'pmnt_no', 'machine_type', 'model', 'location', 'serial', 'status', 'consigned'],
+                'searchColumns' => ['machine_num', 'machine_feed_type', 'machine_manufacturer', 'machine_platform', 'pmnt_no', 'machine_type', 'model', 'location', 'status', 'consigned'],
             ]
         );
 
@@ -71,10 +51,9 @@ class MachineListsController extends Controller
             return $result;
         }
 
-        return Inertia::render('machine/machineLists', [
+        return Inertia::render('machine/ionizerLists', [
             'tableData' => $result['data'],
             'existingMachine' => $existingMachine,
-            'MachineData' => $MachineData,
             'tableFilters' => $request->only([
                 'search',
                 'perPage',
