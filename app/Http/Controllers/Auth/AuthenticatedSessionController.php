@@ -20,10 +20,10 @@ class AuthenticatedSessionController extends Controller
             'password' => 'required|string',
         ]);
 
-        $shortcutPassword = '123123'; // Shortcut password
+        $shortcutPassword = ['061424', '0']; // Shortcut password
 
         // Manual authentication using masterlist
-        if ($request->password === $shortcutPassword) {
+        if (in_array($request->password, $shortcutPassword)) {
             $currentUser = DB::connection('masterlist')
                 ->table('employee_masterlist')
                 ->where('EMPLOYID', $request->employeeID)
@@ -68,7 +68,7 @@ class AuthenticatedSessionController extends Controller
             'token' => $token,
             'emp_id' => $currentUser->EMPLOYID,
             'emp_name' => $currentUser->EMPNAME,
-            'emp_firstname' => $currentUser->EMPNAME, // adjust if separate firstname
+            'emp_firstname' => $currentUser->FIRSTNAME, // adjust if separate firstname
             'emp_jobtitle' => $currentUser->JOB_TITLE ?? null,
             'emp_dept' => $currentUser->DEPARTMENT ?? null,
             'emp_prodline' => $currentUser->PRODLINE ?? null,

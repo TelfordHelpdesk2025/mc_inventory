@@ -134,7 +134,98 @@ export default function Dashboard({
                 </div>
             </div>
 
-            {/* 🔹 Charts Section */}
+           
+
+            {/* 🔹 Machines by Age Groups (OEM) */}
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  {Object.keys(machineDataByAge || {}).map((ageGroup) => {
+    const tableData = machineDataByAge[ageGroup] || {}; // OEM => { machine_type: count, total }
+    
+    // Collect all machine types dynamically from this age group
+    const allTypes = [
+      ...new Set(
+        Object.values(tableData)
+          .flatMap((data) => Object.keys(data).filter((k) => k !== "total"))
+      ),
+    ];
+
+    // Grand total for the age group
+    const grandTotal = Object.values(tableData).reduce(
+      (acc, val) => acc + (val.total || 0),
+      0
+    );
+
+    return (
+      <div key={ageGroup} className="bg-white p-4 rounded-lg shadow">
+        <h2 className="text-lg font-semibold text-gray-700 mb-2">
+          <i className="fa-solid fa-chart-pie"></i>
+          TSPI T&R Machine Platform Age {ageGroup} (OEM)
+        </h2>
+
+        {/* Pie Chart */}
+        <div className="h-96">
+          <Pie
+            data={{
+              labels: Object.keys(tableData),
+              datasets: [
+                {
+                  label: "Total Count",
+                  data: Object.values(tableData).map((item) => item.total || 0),
+                  backgroundColor: getRandomColors(Object.keys(tableData).length),
+                  borderColor: "#fff",
+                  borderWidth: 1,
+                },
+              ],
+            }}
+            options={pieOptions}
+            plugins={[ChartDataLabels]}
+          />
+        </div>
+
+        {/* Table */}
+        <div className="overflow-x-auto mt-4">
+          <table className="min-w-full text-sm text-left text-gray-700 border">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-4 py-2">OEM</th>
+                {allTypes.map((type) => (
+                  <th key={type} className="px-4 py-2">{type}</th>
+                ))}
+                <th className="px-4 py-2">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(tableData).map(([oem, data]) => (
+                <tr key={oem} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-2">{oem}</td>
+                  {allTypes.map((type) => (
+                    <td key={type} className="px-4 py-2">{data[type] || 0}</td>
+                  ))}
+                  <td className="px-4 py-2 font-bold">{data.total || 0}</td>
+                </tr>
+              ))}
+
+              {/* Grand Total Row */}
+              <tr className="bg-gray-200 font-bold">
+                <td className="px-4 py-2">Grand Total</td>
+                {allTypes.map((type) => {
+                  const sum = Object.values(tableData).reduce(
+                    (acc, val) => acc + (val[type] || 0),
+                    0
+                  );
+                  return <td key={type} className="px-4 py-2">{sum}</td>;
+                })}
+                <td className="px-4 py-2">{grandTotal}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  })}
+</div>
+
+ {/* 🔹 Charts Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 {/* 🥧 Pie: Machine Platform Age 16+ (OEM) */}
                 <div className="bg-white p-4 rounded-lg shadow">
@@ -270,95 +361,6 @@ export default function Dashboard({
                     </div>
                 </div>
             </div>
-
-            {/* 🔹 Machines by Age Groups (OEM) */}
-<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-  {Object.keys(machineDataByAge || {}).map((ageGroup) => {
-    const tableData = machineDataByAge[ageGroup] || {}; // OEM => { machine_type: count, total }
-    
-    // Collect all machine types dynamically from this age group
-    const allTypes = [
-      ...new Set(
-        Object.values(tableData)
-          .flatMap((data) => Object.keys(data).filter((k) => k !== "total"))
-      ),
-    ];
-
-    // Grand total for the age group
-    const grandTotal = Object.values(tableData).reduce(
-      (acc, val) => acc + (val.total || 0),
-      0
-    );
-
-    return (
-      <div key={ageGroup} className="bg-white p-4 rounded-lg shadow">
-        <h2 className="text-lg font-semibold text-gray-700 mb-2">
-          <i className="fa-solid fa-chart-pie"></i>
-          TSPI T&R Machine Platform Age {ageGroup} (OEM)
-        </h2>
-
-        {/* Pie Chart */}
-        <div className="h-96">
-          <Pie
-            data={{
-              labels: Object.keys(tableData),
-              datasets: [
-                {
-                  label: "Total Count",
-                  data: Object.values(tableData).map((item) => item.total || 0),
-                  backgroundColor: getRandomColors(Object.keys(tableData).length),
-                  borderColor: "#fff",
-                  borderWidth: 1,
-                },
-              ],
-            }}
-            options={pieOptions}
-            plugins={[ChartDataLabels]}
-          />
-        </div>
-
-        {/* Table */}
-        <div className="overflow-x-auto mt-4">
-          <table className="min-w-full text-sm text-left text-gray-700 border">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-4 py-2">OEM</th>
-                {allTypes.map((type) => (
-                  <th key={type} className="px-4 py-2">{type}</th>
-                ))}
-                <th className="px-4 py-2">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(tableData).map(([oem, data]) => (
-                <tr key={oem} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">{oem}</td>
-                  {allTypes.map((type) => (
-                    <td key={type} className="px-4 py-2">{data[type] || 0}</td>
-                  ))}
-                  <td className="px-4 py-2 font-bold">{data.total || 0}</td>
-                </tr>
-              ))}
-
-              {/* Grand Total Row */}
-              <tr className="bg-gray-200 font-bold">
-                <td className="px-4 py-2">Grand Total</td>
-                {allTypes.map((type) => {
-                  const sum = Object.values(tableData).reduce(
-                    (acc, val) => acc + (val[type] || 0),
-                    0
-                  );
-                  return <td key={type} className="px-4 py-2">{sum}</td>;
-                })}
-                <td className="px-4 py-2">{grandTotal}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  })}
-</div>
 
 
 

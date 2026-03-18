@@ -18,7 +18,7 @@ export default function NavLinks() {
                
             />
 
-            {["17807"].includes(emp_data?.emp_id) && (
+            {["17807", "1328", "1836"].includes(emp_data?.emp_id) && (
               <SidebarLink
                 href={route("ionizer.list.index")}
                 label="Ionizer List"
@@ -45,7 +45,7 @@ export default function NavLinks() {
 
                         {(
   ["superadmin", "admin", "engineer"].includes(emp_data?.emp_role) ||
-  (["pmtech"].includes(emp_data?.emp_role) && ["17807"].includes(emp_data?.emp_id))
+  (["pmtech"].includes(emp_data?.emp_role) && ["17807", "1836"].includes(emp_data?.emp_id))
 ) && (
   <div>
      <SidebarLink

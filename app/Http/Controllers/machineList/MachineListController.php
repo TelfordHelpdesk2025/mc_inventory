@@ -25,8 +25,8 @@ class MachineListController extends Controller
         // ✅ Gumamit ng remote connection: server25
         $query = DB::connection('server25')->table('machine_list')
             ->select('*')
-            ->where('machine_num', '!=', 'NULL')
-            ->where('machine_num', '!=', '')
+            // ->where('machine_num', '!=', 'NULL')
+            // ->where('machine_num', '!=', '')
             ->orderBy('machine_platform', 'asc');
 
 

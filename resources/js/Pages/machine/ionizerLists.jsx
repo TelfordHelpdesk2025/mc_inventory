@@ -2,19 +2,20 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, router } from "@inertiajs/react";
 import DataTable from "@/Components/DataTable";
 import Modal from "@/Components/Modal";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { Drawer } from "antd";
-import { PlusOutlined, EditOutlined } from "@ant-design/icons";
+import { PlusOutlined, EditOutlined, ReconciliationOutlined, ThunderboltTwoTone } from "@ant-design/icons";
 import "antd/dist/reset.css";
 import EditNoteTwoToneIcon from '@mui/icons-material/EditNoteTwoTone';
 import PhonelinkEraseTwoToneIcon from '@mui/icons-material/PhonelinkEraseTwoTone';
 import VisibilityTwoToneIcon from '@mui/icons-material/VisibilityTwoTone';
 import BookmarkAddedTwoToneIcon from '@mui/icons-material/BookmarkAddedTwoTone';
 import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
-import ScannerTwoToneIcon from '@mui/icons-material/ScannerTwoTone';
 import SizeContext from "antd/es/config-provider/SizeContext";
-import HvacTwoToneIcon from '@mui/icons-material/HvacTwoTone';
+import CreatableSelect from "react-select/creatable";
+
+
 
 /* ======================================================
    FIELD CONFIG (SINGLE SOURCE OF TRUTH)
@@ -23,86 +24,35 @@ const FIELD_GROUPS = {
   general: {
     title: "General Information",
     fields: [
-      { name: "machine_num", label: "Machine No" },
-      { name: "machine_description", label: "Description" },
-      { name: "machine_feed_type", label: "Feed Type" },
-      { name: "machine_type", label: "Machine Type" },
-      { name: "category", label: "Category" },
-      { name: "status", label: "Status" },
-      { name: "condition", label: "Condition" },
-    ],
-  },
+      { name: "machine_type", label: "Machine Type", type: "select", optionsKey: "machine_type" },
+      { name: "status", label: "Status", type: "select", optionsKey: "status" },
+      { name: "pmnt_no", label: "PMNT No" },
+      { name: "cn_no", label: "CN No" },
 
-  identity: {
-    title: "Manufacturer / Identity",
-    fields: [
-      { name: "oem", label: "OEM" },
-      { name: "machine_manufacturer", label: "Manufacturer" },
-      { name: "model", label: "Model" },
+      // title: "Manufacturer / Identity",
+      { name: "oem", label: "OEM", type: "select", optionsKey: "oem" },
+      { name: "machine_manufacturer", label: "Manufacturer", type: "select", optionsKey: "machine_manufacturer" },
+      { name: "model", label: "Model", type: "select", optionsKey: "model" },
       { name: "serial", label: "Serial" },
-      { name: "manufactured_date", label: "Manufactured Date" },
-      { name: "age", label: "Age" },
-    ],
-  },
+      { name: "manufactured_date", label: "Manufactured Date", type: "date" },
+      { name: "age", label: "Age", readonly: true },
 
-  location: {
-    title: "Location & Ownership",
-    fields: [
-      { name: "company_rec_id", label: "Company Rec ID" },
-      { name: "customer_rec_id", label: "Customer Rec ID" },
-      { name: "orig_loc", label: "Original Location" },
-      { name: "site_loc", label: "Site Location" },
-      { name: "location", label: "Current Location" },
-      { name: "consigned", label: "Consigned" },
-      { name: "date_transfer", label: "Date Transfer" },
-    ],
-  },
+      // title: "Location & Ownership",
+      { name: "company_rec_id", label: "Company Rec ID", type: "select", optionsKey: "company_rec_id" },
+      { name: "customer_rec_id", label: "Customer Rec ID", type: "select", optionsKey: "customer_rec_id" },
+      { name: "orig_loc", label: "Original Location", type: "select", optionsKey: "orig_loc"  },
+      { name: "site_loc", label: "Site Location", type: "select", optionsKey: "site_loc"  },
+      { name: "location", label: "Current Location", type: "select", optionsKey: "location"  },
 
-  technical: {
-    title: "Technical Specifications",
-    fields: [
-      { name: "dimension", label: "Dimension" },
-      { name: "weight", label: "Weight" },
-      { name: "phase", label: "Phase" },
-      { name: "hz", label: "Hertz" },
-      { name: "amp", label: "Ampere" },
-      { name: "power_consumption", label: "Power Consumption" },
-      { name: "operating_supply", label: "Operating Supply" },
-    ],
-  },
-
-  capacity: {
-    title: "Capacity",
-    fields: [
-      { name: "spph", label: "SPPH" },
-      { name: "cap_shift", label: "Capacity / Shift" },
-      { name: "cap_delay", label: "Capacity / Delay" },
-      { name: "cap_mo", label: "Capacity / Month" },
-    ],
-  },
-
-  financial: {
-    title: "Financial / Asset Info",
-    fields: [
-      { name: "acquired_from", label: "Acquired From" },
-      { name: "acquisition_type", label: "Acquisition Type" },
-      { name: "acquired_date", label: "Acquired Date" },
-      { name: "unit_price", label: "Unit Price" },
-      { name: "acquired_amount", label: "Acquired Amount" },
-      { name: "useful_life", label: "Useful Life" },
-      { name: "monthly_depreciation", label: "Monthly Depreciation" },
-      { name: "netbook_value", label: "Net Book Value" },
-    ],
-  },
-
-  others: {
-    title: "Others",
-    fields: [
-      { name: "pm_personnel", label: "PM Personnel" },
-      { name: "purpose_acquisition", label: "Purpose of Acquisition" },
+      // title: "Others",
+      { name: "pm_personnel", label: "PM Personnel", type: "select", optionsKey: "pm" },
       { name: "remarks", label: "Remarks" },
     ],
   },
+
+
+
+  
 };
 
 /* ======================================================
@@ -135,6 +85,20 @@ export default function ionizerLists({
   tableFilters,
   emp_data,
   existingMachine,
+  existingPMNT,
+  existingSerial,
+  existingCnum,
+
+  status,
+  model,
+  machine_type,
+  oem,
+  company_rec_id,
+  customer_rec_id,
+  orig_loc,
+  site_loc,
+  location,
+  pm
 }) {
   const [selectedMachine, setSelectedMachine] = useState(null);
   const [formData, setFormData] = useState({});
@@ -143,6 +107,23 @@ export default function ionizerLists({
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
   const [isMachineNumValid, setIsMachineNumValid] = useState(true);
+  const [isPMNTValid, setIsPMNTValid] = useState(true);
+  const [isSerialValid, setIsSerialValid] = useState(true);
+  const [isCnumValid, setIsCnumValid] = useState(true);
+
+  const DROPDOWN_OPTIONS = {
+  status,
+  model,
+  machine_type,
+  oem,
+  company_rec_id,
+  customer_rec_id,
+  orig_loc,
+  site_loc,
+  location,
+  pm
+};
+
 
   /* ================================
      HANDLERS
@@ -172,17 +153,82 @@ export default function ionizerLists({
     setSelectedMachine(null);
   };
 
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+ const isDuplicate = (list, value) =>
+  list
+    ?.map(v => String(v).toLowerCase())
+    .includes(String(value).toLowerCase());
 
-    if (name === "machine_num") {
-      const exists = existingMachine
-        .map(m => m.toLowerCase())
-        .includes(value.toLowerCase());
-      setIsMachineNumValid(!exists);
-    }
-  };
+    const calculateAgeLabel = (fromDate) => {
+  const start = new Date(fromDate);
+  const now = new Date();
+
+  const diffMs = now - start;
+  if (diffMs < 0) return "";
+
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 7) {
+    return `${diffDays} day${diffDays !== 1 ? "s" : ""}`;
+  }
+
+  const diffWeeks = Math.floor(diffDays / 7);
+  if (diffWeeks < 4) {
+    return `${diffWeeks} week${diffWeeks !== 1 ? "s" : ""}`;
+  }
+
+  const diffMonths = Math.floor(diffDays / 30.44);
+  if (diffMonths < 12) {
+    return `${diffMonths} month${diffMonths !== 1 ? "s" : ""}`;
+  }
+
+  const years = Math.floor(diffMonths / 12);
+  const months = diffMonths % 12;
+
+  return months > 0
+    ? `${years} year${years !== 1 ? "s" : ""} ${months} month${months !== 1 ? "s" : ""}`
+    : `${years} year${years !== 1 ? "s" : ""}`;
+};
+
+useEffect(() => {
+  if (!formData.manufactured_date) return;
+
+  setFormData(prev => ({
+    ...prev,
+    age: calculateAgeLabel(formData.manufactured_date),
+  }));
+}, [formData.manufactured_date]);
+
+
+
+  
+
+
+const handleChange = e => {
+  const { name, value } = e.target;
+
+  // ✅ update formData FIRST
+  setFormData(prev => ({
+    ...prev,
+    [name]: value,
+  }));
+
+  // validations
+  if (name === "machine_num") {
+    setIsMachineNumValid(!isDuplicate(existingMachine, value));
+  }
+  if (name === "pmnt_no") {
+    setIsPMNTValid(!isDuplicate(existingPMNT, value));
+  }
+  if (name === "serial") {
+    setIsSerialValid(!isDuplicate(existingSerial, value));
+  }
+  if (name === "cn_no") {
+    setIsCnumValid(!isDuplicate(existingCnum, value));
+  }
+};
+
+
+
 
   const submitEdit = e => {
     e.preventDefault();
@@ -277,30 +323,26 @@ const getStatusClass = (status) => {
 
   return (
     <AuthenticatedLayout>
-      <Head title="Ionizer List" />
+      <Head title="Machine List" />
 
       <div className="flex justify-between mb-4">
-        <h1 className="text-2xl font-bold"><HvacTwoToneIcon style={{fontSize: 45, marginBottom: 10}}/> Ionizer List</h1>
+        <h1 className="text-2xl font-bold"><ThunderboltTwoTone style={{fontSize: 30}}/> Ionizer List</h1>
         <button
           onClick={openAddModal}
           className="bg-green-500 text-white px-3 rounded hover:bg-green-600"
         >
-          <PlusOutlined style={{fontSize: 18, fontWeight: "bold"}} /> New Ionizer
+          <PlusOutlined style={{fontSize: 18, fontWeight: "bold"}} /> NEW IONIZER
         </button>
       </div>
 
        <DataTable
                 columns={[
-                    { key: "machine_num", label: "Machine" },
-                    { key: "machine_feed_type", label: "Feed Type" },
-                    { key: "machine_manufacturer", label: "Manufacturer" },
-                    {key: "machine_platform" , label: "Platform"},
                     {key: "pmnt_no" , label: "Pmnt No."},
                     {key: "machine_type" , label: "Machine Type"},
                     {key: "model" , label: "Model"},
                     {key: "location" , label: "Location"},
+                    {key: "serial" , label: "serial"},
                     {key: "status" , label: "Status"},
-                    {key: "consigned" , label: "Consignment"},
                     { key: "action", label: "Action" },
 
                 ]}
@@ -315,7 +357,7 @@ const getStatusClass = (status) => {
                 }}
                 routeName={route("ionizer.list.index")}
                 filters={tableFilters}
-                rowKey="machine_num"
+                rowKey="id"
                 showExport={false}
             />
 
@@ -376,7 +418,7 @@ const getStatusClass = (status) => {
         </>
       ) : (
         <>
-          <PlusOutlined className="text-emerald-600" />
+          <ReconciliationOutlined className="text-emerald-600" />
           <span className="text-emerald-600">New Ionizer</span>
         </>
       )}
@@ -411,26 +453,103 @@ const getStatusClass = (status) => {
       ))}
     </div>
 
-    {/* FIELDS */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {FIELD_GROUPS[activeTab].fields.map(f => (
-        <div key={f.name}>
-          <label className="text-sm text-gray-600">{f.label}</label>
+   {/* OTHER FIELDS (2 columns) */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {FIELD_GROUPS[activeTab].fields
+    .filter(f => f.name !== "remarks") // exclude remarks here
+    .map(f => (
+      <div key={f.name}>
+        <label className="text-sm text-gray-600">{f.label}</label>
+
+        {f.type === "select" ? (
+          <CreatableSelect
+            options={Object.entries(DROPDOWN_OPTIONS[f.optionsKey] || {}).map(
+              ([value, label]) => ({ value, label })
+            )}
+            value={
+              formData[f.name]
+                ? { value: formData[f.name], label: formData[f.name] }
+                : null
+            }
+            onChange={option =>
+              setFormData(prev => ({
+                ...prev,
+                [f.name]: option?.value || "",
+              }))
+            }
+            placeholder={`Select or type ${f.label}`}
+            isClearable
+            isSearchable
+            className="text-sm"
+          />
+        ) : f.type === "date" ? (
           <input
+            type="date"
             name={f.name}
             value={formData[f.name] || ""}
             onChange={handleChange}
-            className="w-full border rounded px-2 py-1 text-lg"
+            className="w-full border border-gray-500 rounded px-2 py-1 text-lg"
           />
+        ) : f.name === "age" ? (
+          <input
+            type="text"
+            value={formData.age || ""}
+            readOnly
+            className="w-full border rounded px-2 py-1 text-lg bg-gray-100 border-gray-400 cursor-not-allowed"
+          />
+        ) : (
+          <input
+            type="text"
+            name={f.name}
+            value={formData[f.name] || ""}
+            onChange={handleChange}
+            className="w-full border border-gray-500 rounded px-2 py-1 text-lg"
+            required
+          />
+        )}
 
-          {f.name === "machine_num" && !isMachineNumValid && (
-            <p className="text-red-500 text-xs">
-              Machine number already exists
-            </p>
-          )}
-        </div>
-      ))}
+        {/* Duplicate warnings */}
+        {f.name === "machine_num" && !isMachineNumValid && (
+          <p className="text-red-500 text-xs">
+            Machine number already exists
+          </p>
+        )}
+        {f.name === "pmnt_no" && !isPMNTValid && (
+          <p className="text-red-500 text-xs">
+            PMNT number already exists
+          </p>
+        )}
+        {f.name === "serial" && !isSerialValid && (
+          <p className="text-red-500 text-xs">
+            Serial number already exists
+          </p>
+        )}
+        {f.name === "cn_no" && !isCnumValid && (
+          <p className="text-red-500 text-xs">
+            CN number already exists
+          </p>
+        )}
+      </div>
+    ))}
+</div>
+
+{/* REMARKS (full width, 1 column) */}
+{FIELD_GROUPS[activeTab].fields.some(f => f.name === "remarks") && (
+  <div className="grid grid-cols-1 gap-4 mt-4">
+    <div>
+      <label className="text-sm text-gray-600">
+        {FIELD_GROUPS[activeTab].fields.find(f => f.name === "remarks").label}
+      </label>
+      <textarea
+        name="remarks"
+        value={formData.remarks || ""}
+        onChange={handleChange}
+        className="w-full h-16 border border-gray-500 rounded px-2 py-1 text-lg"
+      />
     </div>
+  </div>
+)}
+
 
     {/* ACTIONS */}
     <div className="text-right pt-6">
@@ -443,12 +562,17 @@ const getStatusClass = (status) => {
       </button>
 
       <button
-        type="submit"
-        disabled={!isMachineNumValid}
-        className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600"
-      >
-        <BookmarkAddedTwoToneIcon />Save
-      </button>
+  type="submit"
+  disabled={!isMachineNumValid || !isPMNTValid || !isSerialValid || !isCnumValid}
+  className={`px-4 py-2 rounded text-white ${
+    !isMachineNumValid || !isPMNTValid || !isSerialValid || !isCnumValid
+      ? "bg-gray-400 cursor-not-allowed"
+      : "bg-emerald-500 hover:bg-emerald-600"
+  }`}
+>
+  <BookmarkAddedTwoToneIcon /> Save
+</button>
+
     </div>
   </form>
 </Drawer>
