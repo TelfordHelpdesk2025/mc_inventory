@@ -84,7 +84,7 @@ class WriteOffController extends Controller
             'created_by'      => session('emp_data')['emp_name'] ?? null,
         ]);
 
-        DB::connection('server25')->table('machine_list')
+        DB::connection('server25')->table('machine_tnr_list')
             ->where('machine_num', $request->description)
             ->where('serial', $request->serial_no)
             ->update([
@@ -127,10 +127,10 @@ class WriteOffController extends Controller
         }
 
         // 2. Update the machine status
-        DB::connection('server25')->table('machine_list')
+        DB::connection('server25')->table('machine_tnr_list')
             ->where('machine_num', $writeoff->description) // use machine_num stored in write-off
             ->update([
-                'status' => 'ACTIVE',
+                'status' => 'Active',
                 'updated_by' => session('emp_data')['emp_name'] ?? null,
             ]);
 

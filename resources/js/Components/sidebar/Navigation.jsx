@@ -32,9 +32,27 @@ export default function NavLinks() {
   (["pmtech"].includes(emp_data?.emp_role) && ["1742"].includes(emp_data?.emp_id))
 ) && (
   <div>
-            <SidebarLink
+            {/* <SidebarLink
                 href={route("machine.list.index")}
                 label="Machine Lists"
+                icon={
+                   <i className="fas fa-gears"></i>
+                }
+                        // notifications={5}
+            /> */}
+
+            <SidebarLink
+                href={route("tnr.machine.index")}
+                label="TNR Machine"
+                icon={
+                   <i className="fas fa-gear"></i>
+                }
+                        // notifications={5}
+            />
+
+            <SidebarLink
+                href={route("non.tnr.machine.index")}
+                label="Non-TNR Machine"
                 icon={
                    <i className="fas fa-gears"></i>
                 }

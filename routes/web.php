@@ -14,7 +14,9 @@ require __DIR__ . '/auth.php';
 // General routes
 require __DIR__ . '/general.php';
 
-require __DIR__ . '/machine.php';
+require __DIR__ . '/tnr_machine.php';
+
+require __DIR__ . '/non_tnr_machine.php';
 
 require __DIR__ . '/harddown.php';
 
